@@ -63,73 +63,89 @@ const LoginPage = () => {
   }
 
   if (session) {
-    router.push("/dashboard")
-    return null
+    router.push("/dashboard");
+    return null;
   }
 
   return (
-    <Box className="flex flex-col items-center justify-center min-h-screen bg-blue-600">
-      <Box className="p-6 bg-white rounded-md shadow-lg w-96 max-w-[90vw]">
-        <VStack spacing={4}>
-          <Heading as="h1" size="lg" textAlign="center">
-            Login
-          </Heading>
-          <FormControl id="email">
-            <FormLabel>Email</FormLabel>
-            <Input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="Enter your email"
-              focusBorderColor="blue.500"
-              isRequired
-            />
-          </FormControl>
-          <FormControl id="password">
-            <FormLabel>Password</FormLabel>
-            <Input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Enter your password"
-              focusBorderColor="blue.500"
-              isRequired
-            />
-          </FormControl>
-          <Button
-            onClick={handleLogin}
-            colorScheme="blue"
-            isLoading={loading}
-            loadingText="Logging in"
-            width="full"
-            mt={4}
-          >
-            Login
-          </Button>
-          <Text fontSize="sm" color="gray.500" fontWeight="bold">
-            - or -
+    <>
+    {/* // <Box className="flex items-center  h-screen w-full">
+    //   <Box className="flex w-full">
+    //     Informational Panel */}
+    <Box className="flex items-center  h-screen w-full">
+        <Box className="h-screen w-1/2 bg-black flex flex-col justify-center p-12 text-white">
+          <Heading as="h3" size="lg" mb={3}>Welcome Back!</Heading>
+          <Text fontSize="md">
+            Please login to your account using your credentials or continue with one of the social login options.
           </Text>
-          <Button
-            width="full"
-            variant="outline"
-            leftIcon={<FcGoogle />}
-            onClick={handleGoogleLogin}
-            mb={3}
-          >
-            Continue with Google
-          </Button>
-          <Button
-            width="full"
-            variant="outline"
-            leftIcon={<FaGithub />}
-            onClick={handleGithubLogin}
-          >
-            Continue with GitHub
-          </Button>
-        </VStack>
-      </Box>
-    </Box>
-  )
-}
+        </Box>
 
-export default LoginPage
+        {/* Login Form Panel */}
+        <Box className="w-1/2 bg-white flex flex-row item-center justify-center">
+        <Box className="flex flex-col justify-center">
+          <VStack spacing={3} align="stretch" width="full">
+            <Heading as="h1" size="lg" textAlign="center">Login</Heading>
+            <FormControl id="email" >
+              <FormLabel>Email</FormLabel>
+              <Input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Enter your email"
+                focusBorderColor="blue.500"
+                isRequired
+              />
+            </FormControl>
+            <FormControl id="password">
+              <FormLabel>Password</FormLabel>
+              <Input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Enter your password"
+                focusBorderColor="blue.500"
+                isRequired
+              />
+            </FormControl>
+            <Button
+              onClick={handleLogin}
+              colorScheme="blue"
+              isLoading={loading}
+              loadingText="Logging in"
+              width="full"
+              mt={4}
+            >
+              Login
+            </Button>
+            <Text fontSize="sm" color="gray.500" fontWeight="bold" className="text-center">
+              - or -
+            </Text>
+            <Button
+              width="full"
+              variant="outline"
+              leftIcon={<FcGoogle />}
+              onClick={handleGoogleLogin}
+              mb={3}
+            >
+              Continue with Google
+            </Button>
+            <Button
+              width="full"
+              variant="outline"
+              leftIcon={<FaGithub />}
+              onClick={handleGithubLogin}
+            >
+              Continue with GitHub
+            </Button>
+          </VStack>
+          </Box>
+        </Box>
+        </Box>
+      {/* </Box>
+    </Box> */}
+
+    </>
+  );
+};
+
+export default LoginPage;

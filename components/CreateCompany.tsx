@@ -89,8 +89,8 @@ const CreateCompany: React.FC<CreateCompanyProps> = ({ userData, onCompanyCreate
           Welcome to Your New Era of Communication!
         </div>
         <div className="p-4 text-sm sm:text-base">
-          Let's get started on this exciting journey. A few quick details
-          and you'll be on your way to experiencing the future of AI-driven
+          Let`&apos;`s get started on this exciting journey. A few quick details
+          and you`&apos;`ll be on your way to experiencing the future of AI-driven
           call quality.
         </div>
       </div>
