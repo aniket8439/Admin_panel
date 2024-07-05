@@ -30,23 +30,23 @@ export default function Sidebar({ isCollapsed, onToggleSidebar }: SidebarProps) 
   };
 
   return (
-    <div className={`fixed top-0 left-0 ${isCollapsed ? 'w-16' : 'w-64'} bg-gray-800 text-white h-full transition-all duration-300`}>
+    <div className={`fixed top-0 left-0 ${isCollapsed ? 'w-16' : 'w-64'} bg-white text-black h-full transition-all duration-300`}>
       <div className="flex justify-between items-center mb-4 p-4">
         {!isCollapsed && <h2 className="text-2xl font-bold">Dashboard</h2>}
-        <button onClick={onToggleSidebar} className="text-white focus:outline-none">
+        <button onClick={onToggleSidebar} className="text-black focus:outline-none">
           {isCollapsed ? <FaAngleRight /> : <FaAngleLeft />}
         </button>
       </div>
       <nav>
         <ul>
           <li className="mb-2">
-            <button onClick={() => handleOptionSelect('voice-ai')} className="w-full text-left py-2 px-4 hover:bg-gray-700 rounded flex items-center">
+            <button onClick={() => handleOptionSelect('voice-ai')} className="w-full text-left py-2 px-4 hover:bg-gray-500 hover:text-white rounded flex items-center">
               <FaMicrophone className="mr-2" />
               {!isCollapsed && <span>Voice AI</span>}
             </button>
           </li>
           <li className="mb-2">
-            <button onClick={() => handleOptionSelect('call-analysis')} className="w-full text-left py-2 px-4 hover:bg-gray-700 rounded flex items-center">
+            <button onClick={() => handleOptionSelect('call-analysis')} className="w-full text-left py-2 px-4  hover:bg-gray-500 hover:text-white rounded flex items-center">
               <FaPhone className="mr-2" />
               {!isCollapsed && <span>Call Analysis</span>}
             </button>
@@ -54,7 +54,7 @@ export default function Sidebar({ isCollapsed, onToggleSidebar }: SidebarProps) 
           <li className="mb-2">
             <button 
               onClick={() => setIsExecutionLogsOpen(!isExecutionLogsOpen)} 
-              className="w-full text-left py-2 px-4 hover:bg-gray-700 rounded flex items-center justify-between"
+              className="w-full text-left py-2 px-4  hover:bg-gray-500 hover:text-white rounded flex items-center justify-between"
             >
               <div className="flex items-center">
                 <FaFileAlt className="mr-2" />
@@ -67,7 +67,7 @@ export default function Sidebar({ isCollapsed, onToggleSidebar }: SidebarProps) 
                 <li className="mb-2">
                   <button 
                     onClick={() => handleExecutionLogSelect('call-analysis')} 
-                    className="w-full text-left py-1 px-4 hover:bg-gray-700 rounded"
+                    className="w-full text-left py-1 px-4 hover:bg-gray-500 rounded hover:text-white"
                   >
                     Call Analysis Logs
                   </button>
@@ -75,7 +75,7 @@ export default function Sidebar({ isCollapsed, onToggleSidebar }: SidebarProps) 
                 <li className="mb-2">
                   <button 
                     onClick={() => handleExecutionLogSelect('voice-ai')} 
-                    className="w-full text-left py-1 px-4 hover:bg-gray-700 rounded"
+                    className="w-full text-left py-1 px-4  hover:bg-gray-500 hover:text-white rounded"
                   >
                     Voice AI Logs
                   </button>
@@ -84,7 +84,7 @@ export default function Sidebar({ isCollapsed, onToggleSidebar }: SidebarProps) 
             )}
           </li>
           <li className="mb-2">
-            <button onClick={() => handleOptionSelect('billing')} className="w-full text-left py-2 px-4 hover:bg-gray-700 rounded flex items-center">
+            <button onClick={() => handleOptionSelect('billing')} className="w-full text-left py-2 px-4  hover:bg-gray-500 hover:text-white rounded flex items-center">
               <FaFileInvoiceDollar className="mr-2" />
               {!isCollapsed && <span>Billing</span>}
             </button>
@@ -93,7 +93,7 @@ export default function Sidebar({ isCollapsed, onToggleSidebar }: SidebarProps) 
       </nav>
       <button
         onClick={handleLogout}
-        className="mt-8 w-full bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600 flex items-center justify-center"
+        className="mt-8 w-full bg-black text-white py-2 px-4 rounded hover:bg-gray-800 flex items-center justify-center"
       >
         <FaSignOutAlt className="mr-2" />
         {!isCollapsed && <span>Logout</span>}
