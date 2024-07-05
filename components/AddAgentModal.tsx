@@ -1,18 +1,26 @@
-// components/AddAgentModal.tsx
+import React from 'react';
+import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody } from "@chakra-ui/react";
 import CreateAgentForm from "./CreateAgentForm";
 
-export default function AddAgentModal({ isOpen, onClose, onAddAgent }) {
-  if (!isOpen) return null;
-
-  return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-      <div className="bg-white p-6 rounded-lg w-full max-w-4xl">
-        <h2 className="text-2xl font-bold mb-4">Create New Agent</h2>
-        <CreateAgentForm
-          onCreate={onAddAgent}
-          onClose={onClose}
-        />
-      </div>
-    </div>
-  );
+interface AddAgentModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onAddAgent: (agent: any) => void;
 }
+
+const AddAgentModal: React.FC<AddAgentModalProps> = ({ isOpen, onClose, onAddAgent }) => {
+  return (
+    <Modal isOpen={isOpen} onClose={onClose} isCentered>
+      <ModalOverlay />
+      <ModalContent>
+        <ModalHeader>Create New Agent</ModalHeader>
+        <ModalCloseButton />
+        <ModalBody>
+          <CreateAgentForm onCreate={onAddAgent} onClose={onClose} />
+        </ModalBody>
+      </ModalContent>
+    </Modal>
+  );
+};
+
+export default AddAgentModal;

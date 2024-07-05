@@ -1,6 +1,6 @@
 "use client"
 
-import { Box, FormControl, FormLabel, Input, Spinner, useToast } from "@chakra-ui/react"
+import { Box, Button, FormControl, FormLabel, Input, Spinner, useToast, VStack, Heading, Text, HStack, Icon } from "@chakra-ui/react"
 import { useState } from "react"
 import { FcGoogle } from "react-icons/fc"
 import { FaGithub } from "react-icons/fa"
@@ -70,47 +70,63 @@ const LoginPage = () => {
   return (
     <Box className="flex flex-col items-center justify-center min-h-screen bg-blue-600">
       <Box className="p-6 bg-white rounded-md shadow-lg w-96 max-w-[90vw]">
-        <h1 className="text-2xl font-bold mb-4 text-center">Login</h1>
-        <FormControl mb={4}>
-          <FormLabel>Email</FormLabel>
-          <Input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="Enter your email"
-          />
-        </FormControl>
-        <FormControl mb={4}>
-          <FormLabel>Password</FormLabel>
-          <Input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="Enter your password"
-          />
-        </FormControl>
-        <button
-          onClick={handleLogin}
-          className="bg-blue-500 text-lg font-bold flex gap-2 justify-center align-middle w-full mt-4 p-2 text-white rounded-md hover:bg-blue-600"
-          disabled={loading}
-        >
-          {loading && <Spinner color="white" />} <span>Login</span>
-        </button>
-        <div className="text-center p-2 font-bold text-gray-500">- or -</div>
-        <button
-          className="px-7 py-2 w-full gap-2 bg-white text-black border border-blue-100 font-medium text-sm leading-snug uppercase rounded shadow-md hover:shadow-lg focus:shadow-lg focus:outline-none focus:ring-0 active:shadow-lg transition duration-150 ease-in-out flex justify-center items-center mb-3"
-          onClick={handleGoogleLogin}
-        >
-          <FcGoogle className="text-2xl" />
-          <span>Continue with Google</span>
-        </button>
-        <button
-          className="px-7 py-2 w-full gap-2 bg-white text-black border border-blue-100 font-medium text-sm leading-snug uppercase rounded shadow-md hover:shadow-lg focus:shadow-lg focus:outline-none focus:ring-0 active:shadow-lg transition duration-150 ease-in-out flex justify-center items-center mb-3"
-          onClick={handleGithubLogin}
-        >
-          <FaGithub className="text-2xl" />
-          <span>Continue with GitHub</span>
-        </button>
+        <VStack spacing={4}>
+          <Heading as="h1" size="lg" textAlign="center">
+            Login
+          </Heading>
+          <FormControl id="email">
+            <FormLabel>Email</FormLabel>
+            <Input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Enter your email"
+              focusBorderColor="blue.500"
+              isRequired
+            />
+          </FormControl>
+          <FormControl id="password">
+            <FormLabel>Password</FormLabel>
+            <Input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Enter your password"
+              focusBorderColor="blue.500"
+              isRequired
+            />
+          </FormControl>
+          <Button
+            onClick={handleLogin}
+            colorScheme="blue"
+            isLoading={loading}
+            loadingText="Logging in"
+            width="full"
+            mt={4}
+          >
+            Login
+          </Button>
+          <Text fontSize="sm" color="gray.500" fontWeight="bold">
+            - or -
+          </Text>
+          <Button
+            width="full"
+            variant="outline"
+            leftIcon={<FcGoogle />}
+            onClick={handleGoogleLogin}
+            mb={3}
+          >
+            Continue with Google
+          </Button>
+          <Button
+            width="full"
+            variant="outline"
+            leftIcon={<FaGithub />}
+            onClick={handleGithubLogin}
+          >
+            Continue with GitHub
+          </Button>
+        </VStack>
       </Box>
     </Box>
   )

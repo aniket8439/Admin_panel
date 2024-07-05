@@ -1,134 +1,125 @@
-"use client"
-import React, { useRef, useState } from "react";
-import { FiUpload } from "react-icons/fi";
-import {
-  useToast,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalFooter,
-  ModalBody,
-  ModalCloseButton,
-  useDisclosure,
-  Spinner,
-} from "@chakra-ui/react";
+"use client";
 
-const CallAnalysis = () => {
-  const [loading, setLoading] = useState(false);
-  const [fileName, setFileName] = useState("");
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const hiddenFileInput = useRef<HTMLInputElement>(null);
+import { useState, useEffect } from "react";
+import { Box, Button, Heading, Text, Flex, Center, Spinner, useToast, VStack } from "@chakra-ui/react";
+import AddAgentModalCallAnalysis from "@/components/AddAgentModalCallAnalysis";
+import DisplayAgentModalCallAnalysis from "@/components/DisplayAgentModalCallAnalysis";
+
+interface Agent {
+  agent_name: string;
+  prompt: string;
+  llmmodel: string;
+  language: string;
+}
+
+export default function CallAnalysis() {
+  const [isAddAgentModalOpen, setIsAddAgentModalOpen] = useState(false);
+  const [agents, setAgents] = useState<Agent[]>([]);
+  const [selectedAgent, setSelectedAgent] = useState<Agent | null>(null);
+  const [loading, setLoading] = useState(true);
   const toast = useToast();
-  const uploadModal = useDisclosure();
 
-  const handleFile = (file: File) => {
-    setFileName(file.name);
-    setSelectedFile(file);
-  };
+  useEffect(() => {
+    fetchAgents();
+  }, []);
 
-  const handleClick = () => {
-    if (hiddenFileInput.current !== null) hiddenFileInput.current.click();
-  };
-
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const fileUploaded = event.target.files?.[0];
-    if (fileUploaded) {
-      handleFile(fileUploaded);
-    }
-  };
-
-  const showToast = (title: string, status: "info" | "warning" | "success" | "error") => {
-    toast({
-      title,
-      status,
-      duration: 5000,
-      isClosable: true,
-      position: "bottom",
-    });
-  };
-
-  const handleFileSubmit = async () => {
-    if (!selectedFile) {
-      showToast("Please select a file before submitting.", "warning");
-      return;
-    }
-
+  const fetchAgents = async () => {
     try {
-      setLoading(true);
-      // Handle the file upload logic here, such as sending it to an API or processing it locally
-      // Since we're not using any backend, we'll just simulate an upload delay
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-      showToast("File Uploaded Successfully", "success");
+      const response = await fetch('/api/agents');
+      if (!response.ok) {
+        throw new Error('Failed to fetch agents');
+      }
+      const data = await response.json();
+      setAgents(data);
     } catch (error) {
-      showToast("An error occurred during file upload", "error");
+      console.error('Error fetching agents:', error);
+      const message = error instanceof Error ? error.message : 'An unexpected error occurred';
+      toast({
+        title: "Error fetching agents",
+        description: message,
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
     } finally {
       setLoading(false);
-      setFileName("");
-      setSelectedFile(null);
-      uploadModal.onClose();
+    }
+  };
+
+  const handleAddAgent = (newAgent: Agent) => {
+    setAgents([newAgent, ...agents]);
+    setSelectedAgent(newAgent);
+    setIsAddAgentModalOpen(false);
+  };
+
+  const handleSelectAgent = (agent: Agent) => {
+    if (selectedAgent && selectedAgent.agent_name === agent.agent_name) {
+      setSelectedAgent(null); // Toggle off if the same agent is clicked again
+    } else {
+      setSelectedAgent(agent); // Set the selected agent
     }
   };
 
   return (
-    <>
-      <div className="flex flex-col align-middle items-center justify-center gap-2">
-        <div className="text-2xl font-bold">Upload Your Audio for Analysis</div>
-        <div
-          onClick={uploadModal.onOpen}
-          className="flex gap-1 items-center p-2 cursor-pointer bg-blue-500 text-white text-center rounded-sm transition duration-300 ease-in-out"
-        >
-          <FiUpload className="text-xl" />
-          <span>Upload Your File (Mp3, WAV, Mp4... Format)</span>
-        </div>
-      </div>
-      <Modal isOpen={uploadModal.isOpen} onClose={uploadModal.onClose}>
-        <ModalOverlay />
-        <ModalContent className="flex mx-2 my-auto">
-          <ModalHeader className="text-center text-base">
-            Upload Your Audio for Analysis (Mp3, WAV, Mp4.. Format)
-          </ModalHeader>
-          <ModalCloseButton />
-          <ModalBody className="mb-4 space-y-2">
-            <div
-              onClick={handleClick}
-              className="flex gap-1 items-center justify-center text-blue-500 p-2 cursor-pointer border-dashed border border-blue-500 text-center rounded-sm transition duration-300 ease-in-out"
-            >
-              <FiUpload className="text-xl" />
-              <span>Upload File</span>
-            </div>
-            {fileName && <span className="text-sm text-gray-500">{fileName}</span>}
-            <input
-              type="file"
-              onChange={handleChange}
-              ref={hiddenFileInput}
-              accept=".mp3, .wav, .mp4, .aac, .amr, .m4a"
-              style={{ display: "none" }}
-            />
-          </ModalBody>
-
-          {selectedFile && (
-            <ModalFooter>
-              <button
-                onClick={handleFileSubmit}
-                className="bg-blue-500 text-lg flex gap-2 mr-2 justify-center items-center align-middle mt-4 px-2 py-1 text-white rounded-md hover:bg-blue-600"
-                disabled={loading}
-              >
-                {loading && <Spinner color="white" />} <span>Submit</span>
-              </button>
-              <button
-                onClick={uploadModal.onClose}
-                disabled={loading}
-                className="bg-red-500 text-lg flex gap-2 justify-center items-center align-middle mt-4 px-2 py-1 text-white rounded-md hover:bg-blue-600"
-              >
-                Cancel
-              </button>
-            </ModalFooter>
+    <Flex direction="column" height="100vh" bg="gray.50">
+      <Box p={4} bg="blue.500" borderBottom="1px solid" borderColor="gray.300">
+        <Center>
+          <Heading as="h1" size="lg" color="white">Call Analysis</Heading>
+        </Center>
+      </Box>
+      <Flex flex="1" overflow="hidden">
+        <Box w="25%" p={4} overflowY="auto" borderRight="1px solid" borderColor="gray.300" bg="white">
+          <Button
+            colorScheme="blue"
+            onClick={() => setIsAddAgentModalOpen(true)}
+            mb={4}
+            w="full"
+          >
+            Add Agent
+          </Button>
+          {loading ? (
+            <Center>
+              <Spinner size="xl" />
+            </Center>
+          ) : agents.length > 0 ? (
+            <VStack spacing={4} align="stretch">
+              {agents.map((agent, index) => (
+                <Box
+                  key={index}
+                  bg={selectedAgent?.agent_name === agent.agent_name ? "blue.100" : "gray.100"}
+                  p={4}
+                  rounded="md"
+                  cursor="pointer"
+                  _hover={{ bg: "gray.200" }}
+                  onClick={() => handleSelectAgent(agent)}
+                  boxShadow="sm"
+                >
+                  <Heading as="h3" size="sm" fontWeight="bold">{agent.agent_name}</Heading>
+                </Box>
+              ))}
+            </VStack>
+          ) : (
+            <Center>
+              <Text color="gray.500">No agents found</Text>
+            </Center>
           )}
-        </ModalContent>
-      </Modal>
-    </>
-  );
-};
+        </Box>
 
-export default CallAnalysis;
+        {selectedAgent && (
+          <Box w="75%" p={4} overflowY="auto" bg="white">
+            <DisplayAgentModalCallAnalysis
+              agent={selectedAgent}
+              onClose={() => setSelectedAgent(null)}
+            />
+          </Box>
+        )}
+      </Flex>
+
+      <AddAgentModalCallAnalysis
+        isOpen={isAddAgentModalOpen}
+        onClose={() => setIsAddAgentModalOpen(false)}
+        onAddAgent={handleAddAgent}
+      />
+    </Flex>
+  );
+}

@@ -41,7 +41,7 @@ const CreateCompany: React.FC<CreateCompanyProps> = ({ userData, onCompanyCreate
     try {
       setLoading(true);
       const response = await axios.post(
-        "https://ai-analysis1-woiveba7pq-as.a.run.app/dashboard/add_company",
+        "https://ai-analysis1-woiveba7pq-as.a.run.app/ui_routes/add_company",
         {
           company_name: formData.companyName,
           spoc_name: formData.spocName,
@@ -109,7 +109,7 @@ const CreateCompany: React.FC<CreateCompanyProps> = ({ userData, onCompanyCreate
                 value={formData.companyName}
                 onChange={handleChange}
                 required
-                placeholder="Agent Insights etc,"
+                placeholder="Tesla etc,"
                 className="outline-none border-none p-2 w-full"
               />
             </div>
@@ -149,7 +149,7 @@ const CreateCompany: React.FC<CreateCompanyProps> = ({ userData, onCompanyCreate
             </div>
           </div>
           <div>
-            <label htmlFor="spocName">SPOC Name</label>
+            <label htmlFor="spocName">Name</label>
             <input
               type="text"
               id="spocName"
@@ -162,7 +162,7 @@ const CreateCompany: React.FC<CreateCompanyProps> = ({ userData, onCompanyCreate
             />
           </div>
           <div>
-            <label htmlFor="spocTitle">SPOC Title</label>
+            <label htmlFor="spocTitle">Designation</label>
             <input
               type="text"
               id="spocTitle"
