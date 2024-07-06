@@ -1,6 +1,7 @@
+"use client";
+
 import React, { useState } from 'react';
 import { Box, Button, Flex, Heading, FormControl, FormLabel, Input, Textarea, VStack } from "@chakra-ui/react";
-import { useRouter } from 'next/router';
 import UploadAudioFile from './UploadAudioFile';
 
 interface Agent {
@@ -19,7 +20,6 @@ const DisplayAgentModalCallAnalysis: React.FC<DisplayAgentDetailsProps> = ({ age
   const [isEditing, setIsEditing] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [editedAgent, setEditedAgent] = useState(agent);
-  const router = useRouter();
 
   const handleEdit = () => {
     setIsEditing(true);
@@ -50,7 +50,7 @@ const DisplayAgentModalCallAnalysis: React.FC<DisplayAgentDetailsProps> = ({ age
   };
 
   const handleGetResponse = () => {
-    router.push('/dashboard/execution-logs/call-analysis');
+    window.location.href = '/dashboard/execution-logs/call-analysis';
   };
 
   return (

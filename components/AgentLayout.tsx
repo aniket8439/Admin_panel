@@ -1,4 +1,5 @@
-// components/AgentLayout.tsx
+"use client";
+
 import React, { useState } from 'react';
 import Sidebar from './Sidebar';
 import DisplayAgentModalCallAnalysis from './DisplayAgentModalCallAnalysis';
@@ -29,6 +30,10 @@ const AgentLayout: React.FC<AgentLayoutProps> = ({ agents }) => {
     setIsSidebarCollapsed(!isSidebarCollapsed);
   };
 
+  const handleClose = () => {
+    setSelectedAgent(null);
+  };
+
   return (
     <div className="flex">
       <Sidebar isCollapsed={isSidebarCollapsed} onToggleSidebar={handleToggleSidebar} agents={agents} onAgentSelect={handleAgentSelect} />
@@ -40,7 +45,7 @@ const AgentLayout: React.FC<AgentLayoutProps> = ({ agents }) => {
               <button className="bg-blue-500 text-white py-2 px-4 rounded" onClick={() => alert('Edit Agent Clicked')}>Edit Agent</button>
               <button className="bg-green-500 text-white py-2 px-4 rounded ml-2" onClick={() => alert('Upload Audio File Clicked')}>Upload Audio File</button>
             </div>
-            <DisplayAgentModalCallAnalysis agent={selectedAgent} />
+            <DisplayAgentModalCallAnalysis agent={selectedAgent} onClose={handleClose} />
           </div>
         ) : (
           <div>Select an agent to see details</div>
