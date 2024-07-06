@@ -70,7 +70,6 @@ export default function CreateAgentFormCallAnalysis({ onClose, onCreate }: Creat
           'Authorization': `Bearer ${token}`, // Include the token in the Authorization header
         },
         body: JSON.stringify({
-          company_uuid: "d752bf64-4240-4414-89bb-37d830d3c263",
           agent_name: formData.agent_name,
           configuration_log: {
             ai_prompt: formData.prompt,

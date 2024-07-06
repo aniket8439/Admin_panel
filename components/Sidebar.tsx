@@ -30,7 +30,8 @@ export default function Sidebar({ isCollapsed, onToggleSidebar }: SidebarProps) 
   };
 
   return (
-    <div className={`fixed top-0 left-0 ${isCollapsed ? 'w-16' : 'w-64'} bg-white text-black h-full transition-all duration-300`}>
+    <div className={`fixed top-0 left-0 p-2 ${isCollapsed ? 'w-20' : 'w-64'} bg-white text-black h-full transition-all duration-300`}>
+      <div className='shadow-custom border h-full rounded-md bg-gray-50'>
       <div className="flex justify-between items-center mb-4 p-4">
         {!isCollapsed && <h2 className="text-2xl font-bold">Dashboard</h2>}
         <button onClick={onToggleSidebar} className="text-black focus:outline-none">
@@ -91,6 +92,7 @@ export default function Sidebar({ isCollapsed, onToggleSidebar }: SidebarProps) 
           </li>
         </ul>
       </nav>
+      <div className="p-2">
       <button
         onClick={handleLogout}
         className="mt-8 w-full bg-black text-white py-2 px-4 rounded hover:bg-gray-800 flex items-center justify-center"
@@ -98,6 +100,8 @@ export default function Sidebar({ isCollapsed, onToggleSidebar }: SidebarProps) 
         <FaSignOutAlt className="mr-2" />
         {!isCollapsed && <span>Logout</span>}
       </button>
+      </div>
+      </div>
     </div>
   );
 }

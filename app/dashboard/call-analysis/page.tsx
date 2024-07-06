@@ -6,16 +6,17 @@ import AddAgentModalCallAnalysis from "@/components/AddAgentModalCallAnalysis";
 import DisplayAgentModalCallAnalysis from "@/components/DisplayAgentModalCallAnalysis";
 
 interface Agent {
+  agent_id: string;
   agent_name: string;
-  prompt: string;
-  llmmodel: string;
-  language: string;
+  prompt?: string;
+  llmmodel?: string;
+  language?: string;
 }
 
 export default function CallAnalysis() {
   const [isAddAgentModalOpen, setIsAddAgentModalOpen] = useState(false);
   const [agents, setAgents] = useState<Agent[]>([]);
-  const [selectedAgent, setSelectedAgent] = useState<Agent | null>(null);
+  const [selectedAgentId, setSelectedAgentId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const toast = useToast();
 
@@ -25,12 +26,25 @@ export default function CallAnalysis() {
 
   const fetchAgents = async () => {
     try {
-      const response = await fetch('/api/agents');
+      const token = localStorage.getItem('authToken');
+      if (!token) {
+        throw new Error("Authentication token not found. Please log in again.");
+      }
+
+      const response = await fetch('https://ai-analysis1-woiveba7pq-as.a.run.app/analysis_routes/agents', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
       if (!response.ok) {
         throw new Error('Failed to fetch agents');
       }
       const data = await response.json();
-      setAgents(data);
+      console.log('Fetched agents:', data); // Log the fetched data
+      setAgents(data.agents || []); // Ensure agents is always an array
     } catch (error) {
       console.error('Error fetching agents:', error);
       const message = error instanceof Error ? error.message : 'An unexpected error occurred';
@@ -48,15 +62,15 @@ export default function CallAnalysis() {
 
   const handleAddAgent = (newAgent: Agent) => {
     setAgents([newAgent, ...agents]);
-    setSelectedAgent(newAgent);
+    setSelectedAgentId(newAgent.agent_id);
     setIsAddAgentModalOpen(false);
   };
 
-  const handleSelectAgent = (agent: Agent) => {
-    if (selectedAgent && selectedAgent.agent_name === agent.agent_name) {
-      setSelectedAgent(null); // Toggle off if the same agent is clicked again
+  const handleSelectAgent = (agentId: string) => {
+    if (selectedAgentId === agentId) {
+      setSelectedAgentId(null); // Toggle off if the same agent is clicked again
     } else {
-      setSelectedAgent(agent); // Set the selected agent
+      setSelectedAgentId(agentId); // Set the selected agent
     }
   };
 
@@ -86,12 +100,12 @@ export default function CallAnalysis() {
               {agents.map((agent, index) => (
                 <Box
                   key={index}
-                  bg={selectedAgent?.agent_name === agent.agent_name ? "blue.100" : "gray.100"}
+                  bg={selectedAgentId === agent.agent_id ? "blue.100" : "gray.100"}
                   p={4}
                   rounded="md"
                   cursor="pointer"
                   _hover={{ bg: "gray.200" }}
-                  onClick={() => handleSelectAgent(agent)}
+                  onClick={() => handleSelectAgent(agent.agent_id)}
                   boxShadow="sm"
                 >
                   <Heading as="h3" size="sm" fontWeight="bold">{agent.agent_name}</Heading>
@@ -105,11 +119,11 @@ export default function CallAnalysis() {
           )}
         </Box>
 
-        {selectedAgent && (
+        {selectedAgentId && (
           <Box w="75%" p={4} overflowY="auto" bg="white">
             <DisplayAgentModalCallAnalysis
-              agent={selectedAgent}
-              onClose={() => setSelectedAgent(null)}
+              agent_id={selectedAgentId}
+              onClose={() => setSelectedAgentId(null)}
             />
           </Box>
         )}
