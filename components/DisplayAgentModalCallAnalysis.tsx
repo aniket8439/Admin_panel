@@ -8,6 +8,7 @@ import {
   FormLabel, 
   Input, 
   Textarea, 
+  Select, 
   VStack, 
   Spinner, 
   useToast 
@@ -35,6 +36,7 @@ const DisplayAgentModalCallAnalysis: React.FC<DisplayAgentDetailsProps> = ({ age
   const [agent, setAgent] = useState<Agent | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [analysisResponse, setAnalysisResponse] = useState<any>(null); // State to store the response data
 
   const toast = useToast();
 
@@ -134,7 +136,7 @@ const DisplayAgentModalCallAnalysis: React.FC<DisplayAgentDetailsProps> = ({ age
     setIsUploading(true);
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setAgent(prev => {
       if (!prev) return null;
@@ -158,8 +160,39 @@ const DisplayAgentModalCallAnalysis: React.FC<DisplayAgentDetailsProps> = ({ age
     setIsUploading(false);
   };
 
-  const handleGetResponse = () => {
-    window.location.href = '/dashboard/execution-logs/call-analysis';
+  const handleGetResponse = async () => {
+    try {
+      setIsLoading(true);
+      const response = await fetch(`https://ai-analysis1-woiveba7pq-as.a.run.app/analysis_routes/logs/${agent_id}`, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      setAnalysisResponse(data);
+      toast({
+        title: "Response received successfully",
+        status: "success",
+        duration: 5000,
+        isClosable: true,
+      });
+    } catch (error) {
+      console.error('Error getting response:', error);
+      toast({
+        title: "Failed to get response",
+        description: "An error occurred while getting the response",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   if (isLoading) {
@@ -216,21 +249,26 @@ const DisplayAgentModalCallAnalysis: React.FC<DisplayAgentDetailsProps> = ({ age
           </FormControl>
           <FormControl>
             <FormLabel>LLM Model</FormLabel>
-            <Input
-              type="text"
+            <Select
               name="LLMModel"
               value={agent.configuration_log?.LLMModel || ""}
               onChange={handleInputChange}
-            />
+            >
+              <option value="nova-2">nova-2</option>
+              <option value="whisper-cloud">whisper-cloud</option>
+              <option value="enhanced">enhanced</option>
+            </Select>
           </FormControl>
           <FormControl>
             <FormLabel>Language</FormLabel>
-            <Input
-              type="text"
+            <Select
               name="language"
               value={agent.configuration_log?.language || ""}
               onChange={handleInputChange}
-            />
+            >
+              <option value="en">en - English</option>
+              <option value="hi">hi - Hindi</option>
+            </Select>
           </FormControl>
         </VStack>
       ) : (
@@ -250,7 +288,11 @@ const DisplayAgentModalCallAnalysis: React.FC<DisplayAgentDetailsProps> = ({ age
         </VStack>
       )}
       {isUploading && (
-        <UploadAudioFile onSubmit={handleAudioSubmit} onClose={() => setIsUploading(false)} />
+        <UploadAudioFile 
+          agent_id={agent.agent_id} // Pass the agent_id to UploadAudioFile
+          onSubmit={handleAudioSubmit} 
+          onClose={() => setIsUploading(false)} 
+        />
       )}
     </Box>
   );
