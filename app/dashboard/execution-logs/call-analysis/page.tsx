@@ -14,6 +14,7 @@ import {
   Spinner,
 } from "@chakra-ui/react";
 import UploadAudioFile from "@/components/UploadAudioFile"; // Adjust the import path as necessary
+import DisplayAgentModalCallAnalysis from "@/components/DisplayAgentModalCallAnalysis"; // Adjust the import path as necessary
 
 const CallAnalysis = () => {
   const [loading, setLoading] = useState(false);
@@ -23,6 +24,13 @@ const CallAnalysis = () => {
   const toast = useToast();
   const uploadModal = useDisclosure();
   const [responseTime, setResponseTime] = useState<Date | null>(null); // State to store response time
+  const agent = {
+    agent_name: "Sample Agent",
+    prompt: "Sample Prompt",
+    llmmodel: "Sample Model",
+    language: "en",
+  };
+  const [showModal, setShowModal] = useState(false);
 
   const showToast = (title: string, status: "info" | "warning" | "success" | "error") => {
     toast({

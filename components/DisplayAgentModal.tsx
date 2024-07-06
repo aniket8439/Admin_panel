@@ -1,13 +1,17 @@
 import React, { useState } from 'react';
 import { Box, Button, Flex, Heading, FormControl, FormLabel, Input, Textarea, VStack } from "@chakra-ui/react";
 
-interface Agent {
-  agent_name: string;
+interface AgentConfig {
   begin_message: string;
   prompt: string;
-  provider: string;
   llmmodel: string;
   voice_id: string;
+}
+
+interface Agent {
+  agent_id: string;
+  agent_name: string;
+  config: AgentConfig;
 }
 
 interface DisplayAgentDetailsProps {
@@ -31,7 +35,13 @@ const DisplayAgentModal: React.FC<DisplayAgentDetailsProps> = ({ agent, onClose 
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    setEditedAgent({ ...editedAgent, [name]: value });
+    setEditedAgent({
+      ...editedAgent,
+      config: {
+        ...editedAgent.config,
+        [name]: value
+      }
+    });
   };
 
   const handlePhoneCall = () => {
@@ -86,7 +96,7 @@ const DisplayAgentModal: React.FC<DisplayAgentDetailsProps> = ({ agent, onClose 
           <Input
             type="text"
             name="begin_message"
-            value={editedAgent.begin_message}
+            value={editedAgent.config.begin_message}
             readOnly={!isEditing}
             onChange={handleInputChange}
           />
@@ -95,20 +105,10 @@ const DisplayAgentModal: React.FC<DisplayAgentDetailsProps> = ({ agent, onClose 
           <FormLabel>Prompt</FormLabel>
           <Textarea
             name="prompt"
-            value={editedAgent.prompt}
+            value={editedAgent.config.prompt}
             readOnly={!isEditing}
             onChange={handleInputChange}
             rows={6}
-          />
-        </FormControl>
-        <FormControl isReadOnly={!isEditing}>
-          <FormLabel>Provider</FormLabel>
-          <Input
-            type="text"
-            name="provider"
-            value={editedAgent.provider}
-            readOnly={!isEditing}
-            onChange={handleInputChange}
           />
         </FormControl>
         <FormControl isReadOnly={!isEditing}>
@@ -116,7 +116,7 @@ const DisplayAgentModal: React.FC<DisplayAgentDetailsProps> = ({ agent, onClose 
           <Input
             type="text"
             name="llmmodel"
-            value={editedAgent.llmmodel}
+            value={editedAgent.config.llmmodel}
             readOnly={!isEditing}
             onChange={handleInputChange}
           />
@@ -126,7 +126,7 @@ const DisplayAgentModal: React.FC<DisplayAgentDetailsProps> = ({ agent, onClose 
           <Input
             type="text"
             name="voice_id"
-            value={editedAgent.voice_id}
+            value={editedAgent.config.voice_id}
             readOnly={!isEditing}
             onChange={handleInputChange}
           />

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Box, Button, Flex, Heading, FormControl, FormLabel, Input, Textarea, VStack } from "@chakra-ui/react";
+import { useRouter } from 'next/router';
 import UploadAudioFile from './UploadAudioFile';
 
 interface Agent {
@@ -18,6 +19,7 @@ const DisplayAgentModalCallAnalysis: React.FC<DisplayAgentDetailsProps> = ({ age
   const [isEditing, setIsEditing] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [editedAgent, setEditedAgent] = useState(agent);
+  const router = useRouter();
 
   const handleEdit = () => {
     setIsEditing(true);
@@ -47,6 +49,10 @@ const DisplayAgentModalCallAnalysis: React.FC<DisplayAgentDetailsProps> = ({ age
     setIsUploading(false);
   };
 
+  const handleGetResponse = () => {
+    router.push('/dashboard/execution-logs/call-analysis');
+  };
+
   return (
     <Box bg="white" p={6} rounded="md" shadow="md" w="full" boxShadow="lg">
       <Flex justifyContent="space-between" alignItems="center" mb={4}>
@@ -59,6 +65,9 @@ const DisplayAgentModalCallAnalysis: React.FC<DisplayAgentDetailsProps> = ({ age
               </Button>
               <Button onClick={handleUploadAudio} colorScheme="green" mr={2}>
                 Upload Audio File
+              </Button>
+              <Button onClick={handleGetResponse} colorScheme="purple" mr={2}>
+                Get Response
               </Button>
               <Button onClick={onClose} colorScheme="red">
                 Close

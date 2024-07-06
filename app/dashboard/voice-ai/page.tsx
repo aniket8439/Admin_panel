@@ -5,13 +5,17 @@ import { Box, Button, Heading, Text, Flex, Center, Spinner, useToast, VStack } f
 import AddAgentModal from "@/components/AddAgentModal";
 import DisplayAgentModal from "@/components/DisplayAgentModal";
 
-interface Agent {
-  agent_name: string;
-  prompt: string;
+interface AgentConfig {
   begin_message: string;
-  provider: string;
+  prompt: string;
   llmmodel: string;
   voice_id: string;
+}
+
+interface Agent {
+  agent_id: string;
+  agent_name: string;
+  config: AgentConfig;
 }
 
 export default function VoiceAI() {
@@ -27,12 +31,12 @@ export default function VoiceAI() {
 
   const fetchAgents = async () => {
     try {
-      const response = await fetch('/api/agents');
+      const response = await fetch('https://ai-analysis1-woiveba7pq-as.a.run.app/voice_ai/agents/3a6529f1-06d2-448c-8899-6feeff886f13');
       if (!response.ok) {
         throw new Error('Failed to fetch agents');
       }
       const data = await response.json();
-      setAgents(data);
+      setAgents(data.agents);
     } catch (error) {
       console.error('Error fetching agents:', error);
       const message = error instanceof Error ? error.message : 'An unexpected error occurred';
@@ -55,7 +59,7 @@ export default function VoiceAI() {
   };
 
   const handleSelectAgent = (agent: Agent) => {
-    if (selectedAgent && selectedAgent.agent_name === agent.agent_name) {
+    if (selectedAgent && selectedAgent.agent_id === agent.agent_id) {
       setSelectedAgent(null); // Toggle off if the same agent is clicked again
     } else {
       setSelectedAgent(agent); // Set the selected agent
@@ -85,10 +89,10 @@ export default function VoiceAI() {
             </Center>
           ) : agents.length > 0 ? (
             <VStack spacing={4} align="stretch">
-              {agents.map((agent, index) => (
+              {agents.map((agent) => (
                 <Box
-                  key={index}
-                  bg={selectedAgent?.agent_name === agent.agent_name ? "blue.100" : "gray.100"}
+                  key={agent.agent_id}
+                  bg={selectedAgent?.agent_id === agent.agent_id ? "blue.100" : "gray.100"}
                   p={4}
                   rounded="md"
                   cursor="pointer"
@@ -97,9 +101,6 @@ export default function VoiceAI() {
                   boxShadow="sm"
                 >
                   <Heading as="h3" size="sm" fontWeight="bold">{agent.agent_name}</Heading>
-                  <Text mt={2} noOfLines={2}>
-                    {agent.prompt ? agent.prompt : 'No prompt available'}
-                  </Text>
                 </Box>
               ))}
             </VStack>

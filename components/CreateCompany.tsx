@@ -60,6 +60,11 @@ const CreateCompany: React.FC<CreateCompanyProps> = ({ userData, onCompanyCreate
         isClosable: true,
       });
 
+      // Store the token in local storage
+      if (data.token) {
+        localStorage.setItem('authToken', data.token);
+      }
+
       console.log("Company created, calling onCompanyCreated...");
       onCompanyCreated();
     } catch (error: unknown) {
@@ -89,8 +94,8 @@ const CreateCompany: React.FC<CreateCompanyProps> = ({ userData, onCompanyCreate
           Welcome to Your New Era of Communication!
         </div>
         <div className="p-4 text-sm sm:text-base">
-          Let`&apos;`s get started on this exciting journey. A few quick details
-          and you`&apos;`ll be on your way to experiencing the future of AI-driven
+          Let&apos;s get started on this exciting journey. A few quick details
+          and you&apos;ll be on your way to experiencing the future of AI-driven
           call quality.
         </div>
       </div>

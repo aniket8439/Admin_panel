@@ -15,11 +15,37 @@ interface FormData {
   language: string;
 }
 
+const defaultPrompt = `To evaluate the agents performance based on the provided script, here is a summary of the essential elements:
+Information Extraction
+Lead Details: Extracted from the conversation, including name, course interest, intended country, and intake period.
+Financial Planning: Discussion about budget, whether funding through self or loan.
+Academic Background: Checking the lead's academic scores and qualifications.
+Counselling Session: Status of scheduling a counseling session.
+Script Follow Analysis
+Introduction and Verification: Agent successfully verified the lead's identity and explained the call's purpose.
+Inquiry Confirmation: Details of the study program and intake period were correctly confirmed.
+Academic and Qualifications: Agent collected accurate academic information.
+Budget and Financial Planning: Provided clear information on costs and financial planning.
+Document Verification and Closing: Necessary documents were requested, and the counseling session was successfully scheduled.
+Sales Pitch Analysis
+Personal Address and Context Establishment: Agent used the lead's name effectively and referenced previous communications.
+Interest Confirmation and Benefits Highlight: Confirmed interest and outlined the program benefits.
+Urgency and Offers: Created urgency about application deadlines and mentioned financial incentives.
+Payment Process and Commitment Encouragement: Discussed payment options and encouraged scheduling a detailed counseling session.
+Overall Recommendations
+Ensure clarity throughout the call.
+Address lead's specific concerns directly.
+Follow up promptly on commitments and document submissions.
+Proactively offer additional information on scholarships and services.
+Scores and Actions
+Script Follow Score: Calculated based on the completeness and accuracy in following the script.
+Sales Pitch Score: Assessed based on how effectively the agent pitched the services and addressed the lead's potential concerns.`;
+
 export default function CreateAgentFormCallAnalysis({ onClose, onCreate }: CreateAgentFormProps) {
   const [activeTab, setActiveTab] = useState("Agent");
   const [formData, setFormData] = useState<FormData>({
     agent_name: "",
-    prompt: "",
+    prompt: defaultPrompt,
     llmmodel: "",
     language: "",
   });
@@ -31,10 +57,17 @@ export default function CreateAgentFormCallAnalysis({ onClose, onCreate }: Creat
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
+      // Retrieve the token from local storage
+      const token = localStorage.getItem('authToken');
+      if (!token) {
+        throw new Error("Authentication token not found. Please log in again.");
+      }
+
       const response = await fetch('https://ai-analysis1-woiveba7pq-as.a.run.app/ui_routes/add_agent', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`, // Include the token in the Authorization header
         },
         body: JSON.stringify({
           company_uuid: "d752bf64-4240-4414-89bb-37d830d3c263",
