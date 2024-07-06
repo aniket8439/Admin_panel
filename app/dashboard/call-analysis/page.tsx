@@ -44,7 +44,7 @@ export default function CallAnalysis() {
       }
       const data = await response.json();
       console.log('Fetched agents:', data); // Log the fetched data
-      setAgents(data.agents || []); // Ensure agents is always an array
+      setAgents(data || []); // Ensure agents is always an array
     } catch (error) {
       console.error('Error fetching agents:', error);
       const message = error instanceof Error ? error.message : 'An unexpected error occurred';
@@ -63,15 +63,12 @@ export default function CallAnalysis() {
   const handleAddAgent = (newAgent: Agent) => {
     setAgents([newAgent, ...agents]);
     setSelectedAgentId(newAgent.agent_id);
+    fetchAgents(); // Fetch agents after adding a new one
     setIsAddAgentModalOpen(false);
   };
 
   const handleSelectAgent = (agentId: string) => {
-    if (selectedAgentId === agentId) {
-      setSelectedAgentId(null); // Toggle off if the same agent is clicked again
-    } else {
-      setSelectedAgentId(agentId); // Set the selected agent
-    }
+    setSelectedAgentId(agentId); // Set the selected agent without toggling
   };
 
   return (
@@ -133,6 +130,7 @@ export default function CallAnalysis() {
         isOpen={isAddAgentModalOpen}
         onClose={() => setIsAddAgentModalOpen(false)}
         onAddAgent={handleAddAgent}
+        onAgentCreated={fetchAgents} // Pass fetchAgents to fetch agents after creation
       />
     </Flex>
   );

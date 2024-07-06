@@ -105,9 +105,6 @@ const DisplayAgentModalCallAnalysis: React.FC<DisplayAgentDetailsProps> = ({ age
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      const updatedAgent = await response.json();
-      setAgent(updatedAgent);
-      setIsEditing(false);
       toast({
         title: "Agent updated",
         description: "The agent has been successfully updated.",
@@ -115,6 +112,10 @@ const DisplayAgentModalCallAnalysis: React.FC<DisplayAgentDetailsProps> = ({ age
         duration: 5000,
         isClosable: true,
       });
+
+      // Re-fetch the updated agent details
+      fetchAgentDetails();
+      setIsEditing(false);
     } catch (error) {
       console.error('Error updating agent:', error);
       toast({
@@ -210,7 +211,7 @@ const DisplayAgentModalCallAnalysis: React.FC<DisplayAgentDetailsProps> = ({ age
             <FormLabel>Prompt</FormLabel>
             <Textarea
               name="ai_prompt"
-              value={agent.configuration_log.ai_prompt || ""}
+              value={agent.configuration_log?.ai_prompt || ""}
               onChange={handleInputChange}
               rows={6}
             />
@@ -220,7 +221,7 @@ const DisplayAgentModalCallAnalysis: React.FC<DisplayAgentDetailsProps> = ({ age
             <Input
               type="text"
               name="LLMModel"
-              value={agent.configuration_log.LLMModel || ""}
+              value={agent.configuration_log?.LLMModel || ""}
               onChange={handleInputChange}
             />
           </FormControl>
@@ -229,7 +230,7 @@ const DisplayAgentModalCallAnalysis: React.FC<DisplayAgentDetailsProps> = ({ age
             <Input
               type="text"
               name="language"
-              value={agent.configuration_log.language || ""}
+              value={agent.configuration_log?.language || ""}
               onChange={handleInputChange}
             />
           </FormControl>
@@ -240,13 +241,13 @@ const DisplayAgentModalCallAnalysis: React.FC<DisplayAgentDetailsProps> = ({ age
             <strong>Agent Name:</strong> {agent.agent_name}
           </Box>
           <Box>
-            <strong>Prompt:</strong> {agent.configuration_log.ai_prompt || ""}
+            <strong>Prompt:</strong> {agent.configuration_log?.ai_prompt || ""}
           </Box>
           <Box>
-            <strong>LLM Model:</strong> {agent.configuration_log.LLMModel || ""}
+            <strong>LLM Model:</strong> {agent.configuration_log?.LLMModel || ""}
           </Box>
           <Box>
-            <strong>Language:</strong> {agent.configuration_log.language || ""}
+            <strong>Language:</strong> {agent.configuration_log?.language || ""}
           </Box>
         </VStack>
       )}

@@ -6,6 +6,7 @@ import VoiceTabCallAnalysis from "./VoiceTabCallAnalysis";
 interface CreateAgentFormProps {
   onClose: () => void;
   onCreate: (result: any) => void;
+  onAgentCreated: () => void; // Add this prop
 }
 
 interface FormData {
@@ -41,13 +42,17 @@ Scores and Actions
 Script Follow Score: Calculated based on the completeness and accuracy in following the script.
 Sales Pitch Score: Assessed based on how effectively the agent pitched the services and addressed the lead's potential concerns.`;
 
-export default function CreateAgentFormCallAnalysis({ onClose, onCreate }: CreateAgentFormProps) {
+const defaultllmmodel = 'nova-2'
+
+const defaultlanguage = "en - English"
+
+export default function CreateAgentFormCallAnalysis({ onClose, onCreate, onAgentCreated }: CreateAgentFormProps) {
   const [activeTab, setActiveTab] = useState("Agent");
   const [formData, setFormData] = useState<FormData>({
     agent_name: "",
     prompt: defaultPrompt,
-    llmmodel: "",
-    language: "",
+    llmmodel: defaultllmmodel,
+    language: defaultlanguage,
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -86,6 +91,7 @@ export default function CreateAgentFormCallAnalysis({ onClose, onCreate }: Creat
       const result = await response.json();
       console.log('Agent created successfully:', result);
       onCreate(result); // Call the onCreate callback with the newly created agent
+      onAgentCreated(); // Fetch agents after creation
       onClose(); // Close the modal after successful creation
     } catch (error) {
       console.error('Error creating agent:', error);
