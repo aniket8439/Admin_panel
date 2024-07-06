@@ -120,7 +120,7 @@ export default function CallAnalysis() {
           <Box w="75%" p={4} overflowY="auto" bg="white">
             <DisplayAgentModalCallAnalysis
               agent_id={selectedAgentId}
-              onClose={() => setSelectedAgentId(null)}
+              onAgentUpdated={fetchAgents} // Pass fetchAgents to update the agent list after editing
             />
           </Box>
         )}

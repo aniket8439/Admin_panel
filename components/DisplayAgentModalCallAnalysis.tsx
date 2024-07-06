@@ -26,10 +26,10 @@ interface Agent {
 
 interface DisplayAgentDetailsProps {
   agent_id: string;
-  onClose: () => void;
+  onAgentUpdated: () => void; // Add this prop
 }
 
-const DisplayAgentModalCallAnalysis: React.FC<DisplayAgentDetailsProps> = ({ agent_id, onClose }) => {
+const DisplayAgentModalCallAnalysis: React.FC<DisplayAgentDetailsProps> = ({ agent_id, onAgentUpdated }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [agent, setAgent] = useState<Agent | null>(null);
@@ -116,6 +116,7 @@ const DisplayAgentModalCallAnalysis: React.FC<DisplayAgentDetailsProps> = ({ age
       // Re-fetch the updated agent details
       fetchAgentDetails();
       setIsEditing(false);
+      onAgentUpdated(); // Trigger the callback to update the agent list
     } catch (error) {
       console.error('Error updating agent:', error);
       toast({
@@ -184,9 +185,6 @@ const DisplayAgentModalCallAnalysis: React.FC<DisplayAgentDetailsProps> = ({ age
               </Button>
               <Button onClick={handleGetResponse} colorScheme="purple" mr={2}>
                 Get Response
-              </Button>
-              <Button onClick={onClose} colorScheme="red">
-                Close
               </Button>
             </>
           ) : isEditing ? (
