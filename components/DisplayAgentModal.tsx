@@ -16,17 +16,17 @@ import {
 import PlaceCallModal from './PlaceCallModal'; // Import the new component
 
 interface AgentConfig {
-  begin_message: string;
-  prompt: string;
-  llmmodel: string;
-  voice_id: string;
-  dynamic_variables: string[];
+  begin_message?: string;
+  prompt?: string;
+  llmmodel?: string;
+  voice_id?: string;
+  dynamic_variables?: string[];
 }
 
 interface Agent {
   agent_id: string;
   agent_name: string;
-  config: AgentConfig;
+  config?: AgentConfig;
 }
 
 interface DisplayAgentDetailsProps {
@@ -116,11 +116,13 @@ const DisplayAgentModal: React.FC<DisplayAgentDetailsProps> = ({ agent: initialA
     );
   }
 
+  const dynamicVariables = agent.config?.dynamic_variables ?? [];
+
   return (
     <Box bg="white" p={6} rounded="md" shadow="md" w="full" boxShadow="lg">
       <PlaceCallModal
         agentId={agent.agent_id}
-        dynamicVariables={agent.config.dynamic_variables}
+        dynamicVariables={dynamicVariables}
         isOpen={isPlacingCall}
         onClose={() => setIsPlacingCall(false)}
       />
@@ -161,7 +163,7 @@ const DisplayAgentModal: React.FC<DisplayAgentDetailsProps> = ({ agent: initialA
           <Input
             type="text"
             name="begin_message"
-            value={agent.config.begin_message}
+            value={agent.config?.begin_message ?? ''}
             readOnly={!isEditing}
             onChange={handleInputChange}
           />
@@ -170,7 +172,7 @@ const DisplayAgentModal: React.FC<DisplayAgentDetailsProps> = ({ agent: initialA
           <FormLabel>Prompt</FormLabel>
           <Textarea
             name="prompt"
-            value={agent.config.prompt}
+            value={agent.config?.prompt ?? ''}
             readOnly={!isEditing}
             onChange={handleInputChange}
             rows={6}
@@ -181,7 +183,7 @@ const DisplayAgentModal: React.FC<DisplayAgentDetailsProps> = ({ agent: initialA
           {isEditing ? (
             <Select
               name="llmmodel"
-              value={agent.config.llmmodel}
+              value={agent.config?.llmmodel ?? ''}
               onChange={handleInputChange}
             >
               <option value="gpt-3.5-turbo">gpt-3.5-turbo</option>
@@ -194,7 +196,7 @@ const DisplayAgentModal: React.FC<DisplayAgentDetailsProps> = ({ agent: initialA
             <Input
               type="text"
               name="llmmodel"
-              value={agent.config.llmmodel}
+              value={agent.config?.llmmodel ?? ''}
               readOnly
             />
           )}
@@ -204,7 +206,7 @@ const DisplayAgentModal: React.FC<DisplayAgentDetailsProps> = ({ agent: initialA
           {isEditing ? (
             <Select
               name="voice_id"
-              value={agent.config.voice_id}
+              value={agent.config?.voice_id ?? ''}
               onChange={handleInputChange}
             >
               <option value="11labs-Adrian">11labs-Adrian</option>
@@ -216,7 +218,7 @@ const DisplayAgentModal: React.FC<DisplayAgentDetailsProps> = ({ agent: initialA
             <Input
               type="text"
               name="voice_id"
-              value={agent.config.voice_id}
+              value={agent.config?.voice_id ?? ''}
               readOnly
             />
           )}

@@ -16,6 +16,7 @@ import {
   ModalFooter,
   ModalBody,
   ModalCloseButton,
+  Text,
 } from "@chakra-ui/react";
 
 interface PlaceCallModalProps {
@@ -35,6 +36,20 @@ const PlaceCallModal: React.FC<PlaceCallModalProps> = ({ agentId, dynamicVariabl
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    // Check if all dynamic variables are filled
+    for (const variable of dynamicVariables) {
+      if (!formData[variable]) {
+        toast({
+          title: "Error",
+          description: `Please provide a value for ${variable}`,
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+        });
+        return;
+      }
+    }
+
     try {
       const callData = {
         agent_id: agentId,
@@ -88,26 +103,27 @@ const PlaceCallModal: React.FC<PlaceCallModalProps> = ({ agentId, dynamicVariabl
           <ModalBody>
             <VStack spacing={4} align="stretch">
               {dynamicVariables.map((variable) => (
-                <FormControl key={variable}>
+                <FormControl key={variable} isRequired>
                   <FormLabel>{variable}</FormLabel>
                   <Input
                     type="text"
                     name={variable}
                     value={formData[variable] || ''}
                     onChange={handleChange}
-                    required
                   />
                 </FormControl>
               ))}
-              <FormControl>
+              <FormControl isRequired>
                 <FormLabel>To Number</FormLabel>
                 <Input
                   type="tel"
                   name="to_number"
                   value={formData.to_number || ''}
                   onChange={handleChange}
-                  required
                 />
+                <Text fontSize="sm" color="gray.500">
+                  Note: Prefix number with country code e.g. +911234567890
+                </Text>
               </FormControl>
             </VStack>
           </ModalBody>
