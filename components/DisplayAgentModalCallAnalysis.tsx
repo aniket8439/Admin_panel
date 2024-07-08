@@ -11,7 +11,13 @@ import {
   Select, 
   VStack, 
   Spinner, 
-  useToast 
+  useToast,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalCloseButton,
 } from "@chakra-ui/react";
 import UploadAudioFile from './UploadAudioFile';
 
@@ -27,16 +33,16 @@ interface Agent {
 
 interface DisplayAgentDetailsProps {
   agent_id: string;
-  onAgentUpdated: () => void; // Add this prop
+  onAgentUpdated: () => void;
 }
 
 const DisplayAgentModalCallAnalysis: React.FC<DisplayAgentDetailsProps> = ({ agent_id, onAgentUpdated }) => {
   const [isEditing, setIsEditing] = useState(false);
-  const [isUploading, setIsUploading] = useState(false);
+  const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [agent, setAgent] = useState<Agent | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [analysisResponse, setAnalysisResponse] = useState<any>(null); // State to store the response data
+  const [analysisResponse, setAnalysisResponse] = useState<any>(null);
 
   const toast = useToast();
 
@@ -75,7 +81,6 @@ const DisplayAgentModalCallAnalysis: React.FC<DisplayAgentDetailsProps> = ({ age
 
   const handleEdit = () => {
     setIsEditing(true);
-    setIsUploading(false);
   };
 
   const handleSave = async () => {
@@ -115,10 +120,9 @@ const DisplayAgentModalCallAnalysis: React.FC<DisplayAgentDetailsProps> = ({ age
         isClosable: true,
       });
 
-      // Re-fetch the updated agent details
       fetchAgentDetails();
       setIsEditing(false);
-      onAgentUpdated(); // Trigger the callback to update the agent list
+      onAgentUpdated();
     } catch (error) {
       console.error('Error updating agent:', error);
       toast({
@@ -132,8 +136,7 @@ const DisplayAgentModalCallAnalysis: React.FC<DisplayAgentDetailsProps> = ({ age
   };
 
   const handleUploadAudio = () => {
-    setIsEditing(false);
-    setIsUploading(true);
+    setIsUploadModalOpen(true);
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -157,7 +160,8 @@ const DisplayAgentModalCallAnalysis: React.FC<DisplayAgentDetailsProps> = ({ age
   const handleAudioSubmit = (file: File | null, doVoiceAnalysis: boolean) => {
     console.log("File:", file);
     console.log("Do Voice Analysis:", doVoiceAnalysis);
-    setIsUploading(false);
+    setIsUploadModalOpen(false);
+    // Add logic to handle the file upload and analysis
   };
 
   const handleGetResponse = async () => {
@@ -208,7 +212,7 @@ const DisplayAgentModalCallAnalysis: React.FC<DisplayAgentDetailsProps> = ({ age
       <Flex justifyContent="space-between" alignItems="center" mb={4}>
         <Heading as="h2" size="lg">{agent.agent_name}</Heading>
         <Flex>
-          {!isEditing && !isUploading ? (
+          {!isEditing && (
             <>
               <Button onClick={handleEdit} colorScheme="blue" mr={2}>
                 Edit Agent
@@ -216,17 +220,16 @@ const DisplayAgentModalCallAnalysis: React.FC<DisplayAgentDetailsProps> = ({ age
               <Button onClick={handleUploadAudio} colorScheme="green" mr={2}>
                 Upload Audio File
               </Button>
-              <Button onClick={handleGetResponse} colorScheme="purple" mr={2}>
-                Get Response
-              </Button>
             </>
-          ) : isEditing ? (
+          )}
+          {isEditing && (
             <Button onClick={handleSave} colorScheme="blue" mr={2}>
               Save Agent
             </Button>
-          ) : null}
+          )}
         </Flex>
       </Flex>
+      
       {isEditing ? (
         <VStack spacing={4} align="stretch">
           <FormControl>
@@ -266,8 +269,8 @@ const DisplayAgentModalCallAnalysis: React.FC<DisplayAgentDetailsProps> = ({ age
               value={agent.configuration_log?.language || ""}
               onChange={handleInputChange}
             >
-              <option value="en">en - English</option>
-              <option value="hi">hi - Hindi</option>
+              <option value="en">en</option>
+              <option value="hi">hi</option>
             </Select>
           </FormControl>
         </VStack>
@@ -287,13 +290,28 @@ const DisplayAgentModalCallAnalysis: React.FC<DisplayAgentDetailsProps> = ({ age
           </Box>
         </VStack>
       )}
-      {isUploading && (
-        <UploadAudioFile 
-          agent_id={agent.agent_id} // Pass the agent_id to UploadAudioFile
-          onSubmit={handleAudioSubmit} 
-          onClose={() => setIsUploading(false)} 
-        />
+
+      {analysisResponse && (
+        <Box mt={4}>
+          <Heading as="h3" size="md" mb={2}>Analysis Response:</Heading>
+          <pre>{JSON.stringify(analysisResponse, null, 2)}</pre>
+        </Box>
       )}
+
+      <Modal isOpen={isUploadModalOpen} onClose={() => setIsUploadModalOpen(false)}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Upload Audio File</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <UploadAudioFile 
+              agent_id={agent.agent_id}
+              onSubmit={handleAudioSubmit} 
+              onClose={() => setIsUploadModalOpen(false)} 
+            />
+          </ModalBody>
+        </ModalContent>
+      </Modal>
     </Box>
   );
 };

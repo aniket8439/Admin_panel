@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState, useEffect } from 'react';
 import { 
   Box, 
@@ -11,9 +13,16 @@ import {
   VStack, 
   useToast,
   Spinner,
-  Select 
+  Select,
+  Slider,
+  SliderTrack,
+  SliderFilledTrack,
+  SliderThumb,
+  Switch,
+  Text,
+  HStack,
 } from "@chakra-ui/react";
-import PlaceCallModal from './PlaceCallModal'; // Import the new component
+import PlaceCallModal from './PlaceCallModal';
 
 interface AgentConfig {
   begin_message?: string;
@@ -23,10 +32,28 @@ interface AgentConfig {
   dynamic_variables?: string[];
 }
 
+interface AdditionalSetting {
+  ambient_sound?: string;
+  ambient_sound_volume?: number;
+  backchannel_frequency?: number;
+  backchannel_words?: string[];
+  boosted_keywords?: string[];
+  enable_backchannel?: boolean;
+  end_call_after_silence_ms?: number;
+  interruption_sensitivity?: number;
+  language?: string;
+  reminder_max_count?: number;
+  reminder_trigger_ms?: number;
+  responsiveness?: number;
+  voice_speed?: number;
+  voice_temperature?: number;
+}
+
 interface Agent {
   agent_id: string;
   agent_name: string;
-  config?: AgentConfig;
+  config: AgentConfig;
+  additional_setting: AdditionalSetting;
 }
 
 interface DisplayAgentDetailsProps {
@@ -37,30 +64,48 @@ interface DisplayAgentDetailsProps {
 
 const DisplayAgentModal: React.FC<DisplayAgentDetailsProps> = ({ agent: initialAgent, onClose, onAgentUpdated }) => {
   const [isEditing, setIsEditing] = useState(false);
-  const [agent, setAgent] = useState<Agent>(initialAgent);
-  const [isPlacingCall, setIsPlacingCall] = useState(false); // State for placing call
+  const [agent, setAgent] = useState<Agent | null>(initialAgent);
+  const [isPlacingCall, setIsPlacingCall] = useState(false);
   const toast = useToast();
 
   useEffect(() => {
-    setAgent(initialAgent);
+    if (initialAgent) {
+      setAgent({
+        ...initialAgent,
+        additional_setting: initialAgent.additional_setting || {},
+      });
+    }
   }, [initialAgent]);
 
   const handleSave = async () => {
-    if (!agent) return;
+    if (!agent || !agent.agent_id) {
+      console.error('Agent or agent_id is missing');
+      toast({
+        title: "Error",
+        description: "Agent ID is missing.",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+      return;
+    }
+
+    const additional_setting = agent.additional_setting;
+
+    const payload = {
+      ...agent,
+      additional_setting,
+    };
 
     try {
-      const token = localStorage.getItem('authToken');
-      if (!token) {
-        throw new Error("Authentication token not found. Please log in again.");
-      }
+      console.log('Saving agent:', payload); // Log the agent being saved
 
       const response = await fetch(`https://ai-analysis1-woiveba7pq-as.a.run.app/voice_ai/update_agent/${agent.agent_id}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
         },
-        body: JSON.stringify(agent),
+        body: JSON.stringify(payload),
       });
 
       if (!response.ok) {
@@ -76,7 +121,7 @@ const DisplayAgentModal: React.FC<DisplayAgentDetailsProps> = ({ agent: initialA
       });
 
       setIsEditing(false);
-      onAgentUpdated(); // Trigger the callback to update the agent list
+      onAgentUpdated();
     } catch (error) {
       console.error('Error updating agent:', error);
       toast({
@@ -91,21 +136,42 @@ const DisplayAgentModal: React.FC<DisplayAgentDetailsProps> = ({ agent: initialA
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setAgent(prev => ({
-      ...prev,
-      config: {
-        ...prev.config,
-        [name]: value
-      }
-    }));
-  };
-
-  const handleAgentNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setAgent(prev => ({
+    setAgent(prev => prev ? ({
       ...prev,
       [name]: value
-    }));
+    }) : null);
+  };
+
+  const handleAdditionalSettingChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setAgent(prev => prev ? ({
+      ...prev,
+      additional_setting: {
+        ...prev.additional_setting,
+        [name]: value
+      }
+    }) : null);
+  };
+
+  const handleSliderChange = (name: string, value: number) => {
+    setAgent(prev => prev ? ({
+      ...prev,
+      additional_setting: {
+        ...prev.additional_setting,
+        [name]: value
+      }
+    }) : null);
+  };
+
+  const handleSwitchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, checked } = e.target;
+    setAgent(prev => prev ? ({
+      ...prev,
+      additional_setting: {
+        ...prev.additional_setting,
+        [name]: checked
+      }
+    }) : null);
   };
 
   if (!agent) {
@@ -132,7 +198,7 @@ const DisplayAgentModal: React.FC<DisplayAgentDetailsProps> = ({ agent: initialA
             type="text"
             name="agent_name"
             value={agent.agent_name}
-            onChange={handleAgentNameChange}
+            onChange={handleInputChange}
           />
         ) : (
           agent.agent_name
@@ -223,6 +289,217 @@ const DisplayAgentModal: React.FC<DisplayAgentDetailsProps> = ({ agent: initialA
             />
           )}
         </FormControl>
+        <VStack spacing={6} align="stretch">
+          <FormControl>
+            <FormLabel>Voice Temperature</FormLabel>
+            <HStack spacing={4}>
+              <Slider
+                flex="1"
+                value={agent.additional_setting?.voice_temperature ?? 1}
+                min={0}
+                max={1}
+                step={0.01}
+                onChange={(value) => handleSliderChange('voice_temperature', value)}
+                isDisabled={!isEditing}
+              >
+                <SliderTrack>
+                  <SliderFilledTrack />
+                </SliderTrack>
+                <SliderThumb />
+              </Slider>
+              <Box minWidth="60px" textAlign="right">
+                <Text fontWeight="bold">{(agent.additional_setting?.voice_temperature ?? 1).toFixed(2)}</Text>
+              </Box>
+            </HStack>
+          </FormControl>
+
+          <FormControl>
+            <FormLabel>Voice Speed</FormLabel>
+            <HStack spacing={4}>
+              <Slider
+                flex="1"
+                value={agent.additional_setting?.voice_speed ?? 1}
+                min={0}
+                max={1}
+                step={0.01}
+                onChange={(value) => handleSliderChange('voice_speed', value)}
+                isDisabled={!isEditing}
+              >
+                <SliderTrack>
+                  <SliderFilledTrack />
+                </SliderTrack>
+                <SliderThumb />
+              </Slider>
+              <Box minWidth="60px" textAlign="right">
+                <Text fontWeight="bold">{(agent.additional_setting?.voice_speed ?? 1).toFixed(2)}</Text>
+              </Box>
+            </HStack>
+          </FormControl>
+
+          <FormControl>
+            <FormLabel>Responsiveness</FormLabel>
+            <HStack spacing={4}>
+              <Slider
+                flex="1"
+                value={agent.additional_setting?.responsiveness ?? 1}
+                min={0}
+                max={1}
+                step={0.01}
+                onChange={(value) => handleSliderChange('responsiveness', value)}
+                isDisabled={!isEditing}
+              >
+                <SliderTrack>
+                  <SliderFilledTrack />
+                </SliderTrack>
+                <SliderThumb />
+              </Slider>
+              <Box minWidth="60px" textAlign="right">
+                <Text fontWeight="bold">{(agent.additional_setting?.responsiveness ?? 1).toFixed(2)}</Text>
+              </Box>
+            </HStack>
+          </FormControl>
+
+          <FormControl>
+            <FormLabel>Interruption Sensitivity</FormLabel>
+            <HStack spacing={4}>
+              <Slider
+                flex="1"
+                value={agent.additional_setting?.interruption_sensitivity ?? 1}
+                min={0}
+                max={1}
+                step={0.01}
+                onChange={(value) => handleSliderChange('interruption_sensitivity', value)}
+                isDisabled={!isEditing}
+              >
+                <SliderTrack>
+                  <SliderFilledTrack />
+                </SliderTrack>
+                <SliderThumb />
+              </Slider>
+              <Box minWidth="60px" textAlign="right">
+                <Text fontWeight="bold">{(agent.additional_setting?.interruption_sensitivity ?? 1).toFixed(2)}</Text>
+              </Box>
+            </HStack>
+          </FormControl>
+
+          <FormControl display="flex" alignItems="center">
+            <FormLabel mb="0">Enable Backchannel</FormLabel>
+            <Switch
+              isChecked={agent.additional_setting?.enable_backchannel ?? false}
+              onChange={handleSwitchChange}
+              name="enable_backchannel"
+              isDisabled={!isEditing}
+            />
+          </FormControl>
+
+          {agent.additional_setting?.enable_backchannel && (
+            <>
+              <FormControl>
+                <FormLabel>Backchannel Frequency</FormLabel>
+                <HStack spacing={4}>
+                  <Slider
+                    flex="1"
+                    value={agent.additional_setting?.backchannel_frequency ?? 0.9}
+                    min={0}
+                    max={1}
+                    step={0.01}
+                    onChange={(value) => handleSliderChange('backchannel_frequency', value)}
+                    isDisabled={!isEditing}
+                  >
+                    <SliderTrack>
+                      <SliderFilledTrack />
+                    </SliderTrack>
+                    <SliderThumb />
+                  </Slider>
+                  <Box minWidth="60px" textAlign="right">
+                    <Text fontWeight="bold">{(agent.additional_setting?.backchannel_frequency ?? 0.9).toFixed(2)}</Text>
+                  </Box>
+                </HStack>
+              </FormControl>
+              <FormControl>
+                <FormLabel>Backchannel Words</FormLabel>
+                <Input
+                  type="text"
+                  name="backchannel_words"
+                  value={agent.additional_setting?.backchannel_words?.join(', ') ?? ''}
+                  readOnly={!isEditing}
+                  onChange={handleAdditionalSettingChange}
+                />
+              </FormControl>
+            </>
+          )}
+
+          <FormControl>
+            <FormLabel>Ambient Sound</FormLabel>
+            {isEditing ? (
+              <Select
+                name="ambient_sound"
+                value={agent.additional_setting?.ambient_sound ?? ''}
+                onChange={handleAdditionalSettingChange}
+              >
+                <option value="coffee-shop">Coffee Shop</option>
+                <option value="convention-hall">Convention Hall</option>
+                <option value="summer-outdoor">Summer Outdoor</option>
+                <option value="mountain-outdoor">Mountain Outdoor</option>
+                <option value="static-noise">Static Noise</option>
+                <option value="call-center">Call Center</option>
+                <option value="">None</option>
+              </Select>
+            ) : (
+              <Input
+                type="text"
+                name="ambient_sound"
+                value={agent.additional_setting?.ambient_sound ?? ''}
+                readOnly
+              />
+            )}
+          </FormControl>
+
+          <FormControl>
+            <FormLabel>Ambient Sound Volume</FormLabel>
+            <HStack spacing={4}>
+              <Slider
+                flex="1"
+                value={agent.additional_setting?.ambient_sound_volume ?? 1}
+                min={0}
+                max={2}
+                step={0.01}
+                onChange={(value) => handleSliderChange('ambient_sound_volume', value)}
+                isDisabled={!isEditing}
+              >
+                <SliderTrack>
+                  <SliderFilledTrack />
+                </SliderTrack>
+                <SliderThumb />
+              </Slider>
+              <Box minWidth="60px" textAlign="right">
+                <Text fontWeight="bold">{(agent.additional_setting?.ambient_sound_volume ?? 1).toFixed(2)}</Text>
+              </Box>
+            </HStack>
+          </FormControl>
+
+          <FormControl isReadOnly={!isEditing}>
+            <FormLabel>Boosted Keywords</FormLabel>
+            <Input
+              type="text"
+              name="boosted_keywords"
+              value={agent.additional_setting?.boosted_keywords?.join(', ') ?? ''}
+              readOnly={!isEditing}
+              onChange={handleAdditionalSettingChange}
+            />
+          </FormControl>
+
+          <FormControl isReadOnly={!isEditing}>
+            <FormLabel>End Call After Silence (ms)</FormLabel>
+            <Input
+              type="number"
+              name="end_call_after_silence_ms"
+              value={agent.additional_setting?.end_call_after_silence_ms ?? 600000}
+              readOnly={!isEditing}
+              onChange={handleAdditionalSettingChange}
+            />
+          </FormControl>
+        </VStack>
       </VStack>
     </Box>
   );

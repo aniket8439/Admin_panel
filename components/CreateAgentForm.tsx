@@ -1,7 +1,22 @@
 import { useState } from "react";
+import {
+  Box,
+  Button,
+  Flex,
+  Heading,
+  VStack,
+  useToast,
+  HStack,
+  Tab,
+  TabList,
+  TabPanel,
+  TabPanels,
+  Tabs
+} from "@chakra-ui/react";
 import AgentTab from "./AgentTab";
 import LLMTab from "./LLMTab";
 import VoiceTab from "./VoiceTab";
+import OtherSettingsTab from "./OtherSettingsTab";
 
 interface CreateAgentFormProps {
   onClose: () => void;
@@ -15,27 +30,45 @@ interface FormData {
   provider: string;
   llmmodel: string;
   voice_id: string;
+  voice_temperature?: number;
+  voice_speed?: number;
+  responsiveness?: number;
+  interruption_sensitivity?: number;
+  enable_backchannel?: boolean;
+  backchannel_frequency?: number;
+  backchannel_words?: string[];
+  ambient_sound?: string;
+  ambient_sound_volume?: number;
+  boosted_keywords?: string[];
+  end_call_after_silence_ms?: number;
 }
 
 export default function CreateAgentForm({ onClose, onCreate }: CreateAgentFormProps) {
-  const [activeTab, setActiveTab] = useState("Agent");
   const [formData, setFormData] = useState<FormData>({
     agent_name: "",
     begin_message: "Hello",
-    prompt: `You are Nancy, a sophisticated AI voice agent representing UniScholars. Your task is to reach out to prospective students interested in studying abroad. Your goals are to identify their needs, provide information, guide them through the application process, and schedule counseling sessions if necessary. Maintain a polite, respectful, and empathetic tone throughout the interaction.`,
+    prompt: `You are Nancy, a sophisticated AI voice agent. Your task is to reach out to prospective students interested in studying abroad. Your goals are to identify their needs, provide information, guide them through the application process, and schedule counseling sessions if necessary. Maintain a polite, respectful, and empathetic tone throughout the interaction.`,
     provider: "retell",
     llmmodel: "gpt-3.5-turbo",
     voice_id: "custom-Shanaya",
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSliderChange = (name: string, value: number) => {
+    setFormData({ ...formData, [name]: value });
+  };
+
+  const handleSwitchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, checked } = e.target;
+    setFormData({ ...formData, [name]: checked });
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      // Retrieve the token from local storage
       const token = localStorage.getItem('authToken');
       if (!token) {
         throw new Error("Authentication token not found. Please log in again.");
@@ -45,7 +78,7 @@ export default function CreateAgentForm({ onClose, onCreate }: CreateAgentFormPr
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`, // Include the token in the Authorization header
+          'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify(formData),
       });
@@ -67,60 +100,48 @@ export default function CreateAgentForm({ onClose, onCreate }: CreateAgentFormPr
           dynamic_variables: [],
         }
       };
-      onCreate(newAgent); // Call the onCreate callback with the newly created agent
-      onClose(); // Close the modal after successful creation
+      onCreate(newAgent);
+      onClose();
     } catch (error) {
       console.error('Error creating agent:', error);
-      // You might want to show an error message to the user here
-    }
-  };
-
-  const renderTabContent = () => {
-    switch (activeTab) {
-      case "Agent":
-        return <AgentTab formData={formData} handleChange={handleChange} />;
-      case "Model":
-        return <LLMTab formData={formData} handleChange={handleChange} />;
-      case "Voice":
-        return <VoiceTab formData={formData} handleChange={handleChange} />;
-      default:
-        return <div>Tab content not available</div>;
     }
   };
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-md">
-      <div className="flex space-x-4 mb-6">
-        {["Agent", "Model", "Voice"].map((tab) => (
-          <button
-            key={tab}
-            className={`px-4 py-2 rounded-md ${
-              activeTab === tab ? "bg-blue-500 text-white" : "bg-gray-200 text-gray-700"
-            }`}
-            onClick={() => setActiveTab(tab)}
-          >
-            {tab}
-          </button>
-        ))}
-      </div>
-      <form onSubmit={handleSubmit}>
-        {renderTabContent()}
-        <div className="flex justify-end space-x-2 mt-6">
-          <button
-            type="button"
-            onClick={onClose}
-            className="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400"
-          >
-            Cancel
-          </button>
-          <button
-            type="submit"
-            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-          >
-            Create Agent
-          </button>
-        </div>
-      </form>
-    </div>
+    <Box bg="white" p={6} rounded="md" shadow="md" w="full" boxShadow="lg">
+      <Tabs variant="enclosed">
+        <TabList>
+          <Tab>Agent</Tab>
+          <Tab>Model</Tab>
+          <Tab>Voice</Tab>
+          <Tab>Other Settings</Tab>
+        </TabList>
+        <form onSubmit={handleSubmit}>
+          <TabPanels>
+            <TabPanel>
+              <AgentTab formData={formData} handleChange={handleChange} />
+            </TabPanel>
+            <TabPanel>
+              <LLMTab formData={formData} handleChange={handleChange} />
+            </TabPanel>
+            <TabPanel>
+              <VoiceTab formData={formData} handleChange={handleChange} />
+            </TabPanel>
+            <TabPanel>
+              <OtherSettingsTab
+                formData={formData}
+                handleChange={handleChange}
+                handleSliderChange={handleSliderChange}
+                handleSwitchChange={handleSwitchChange}
+              />
+            </TabPanel>
+          </TabPanels>
+          <HStack justifyContent="end" mt={6} spacing={2}>
+            <Button onClick={onClose} colorScheme="gray">Cancel</Button>
+            <Button type="submit" colorScheme="blue">Create Agent</Button>
+          </HStack>
+        </form>
+      </Tabs>
+    </Box>
   );
 }

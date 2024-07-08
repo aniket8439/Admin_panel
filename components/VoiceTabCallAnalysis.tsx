@@ -21,8 +21,8 @@ const VoiceTabCallAnalysis: React.FC<VoiceTabCallAnalysisProps> = ({ formData, h
           onChange={handleChange}
           className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
         >
-          <option value="en">en - English</option>
-          <option value="hi">hi - Hindi</option>
+          <option value="en">en</option>
+          <option value="hi">hi</option>
         </select>
       </div>
     </div>

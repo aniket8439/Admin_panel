@@ -14,7 +14,7 @@ const LLMTab: React.FC<LLMTabProps> = ({ formData, handleChange }) => {
   return (
     <div>
       <h2 className="text-xl font-bold mb-4">LLM Settings</h2>
-      <div className="mb-4">
+      {/* <div className="mb-4">
         <label className="block text-sm font-medium text-gray-700">Provider</label>
         <select
           name="provider"
@@ -25,7 +25,7 @@ const LLMTab: React.FC<LLMTabProps> = ({ formData, handleChange }) => {
           <option value="retell">Voice Agent 1</option> 
           <option value="bolna">Voice Agent 2</option>              
         </select>
-      </div>
+      </div> */}
       <div className="mb-4">
         <label className="block text-sm font-medium text-gray-700">Model</label>
         <select

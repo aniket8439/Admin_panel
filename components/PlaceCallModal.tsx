@@ -36,7 +36,11 @@ const PlaceCallModal: React.FC<PlaceCallModalProps> = ({ agentId, dynamicVariabl
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // Check if all dynamic variables are filled
+
+    // Log the agentId and formData to ensure they are correct
+    console.log('Agent ID:', agentId);
+    console.log('Form Data:', formData);
+
     for (const variable of dynamicVariables) {
       if (!formData[variable]) {
         toast({
