@@ -138,7 +138,10 @@ const DisplayAgentModal: React.FC<DisplayAgentDetailsProps> = ({ agent: initialA
     const { name, value } = e.target;
     setAgent(prev => prev ? ({
       ...prev,
-      [name]: value
+      config: {
+        ...prev.config,
+        [name]: value
+      }
     }) : null);
   };
 
@@ -198,7 +201,7 @@ const DisplayAgentModal: React.FC<DisplayAgentDetailsProps> = ({ agent: initialA
             type="text"
             name="agent_name"
             value={agent.agent_name}
-            onChange={handleInputChange}
+            onChange={(e) => setAgent(prev => prev ? ({ ...prev, agent_name: e.target.value }) : null)}
           />
         ) : (
           agent.agent_name
@@ -224,7 +227,7 @@ const DisplayAgentModal: React.FC<DisplayAgentDetailsProps> = ({ agent: initialA
         </Flex>
       </Flex>
       <VStack spacing={4} align="stretch">
-        <FormControl isReadOnly={!isEditing}>
+        <FormControl>
           <FormLabel>Begin Message</FormLabel>
           <Input
             type="text"
@@ -234,7 +237,7 @@ const DisplayAgentModal: React.FC<DisplayAgentDetailsProps> = ({ agent: initialA
             onChange={handleInputChange}
           />
         </FormControl>
-        <FormControl isReadOnly={!isEditing}>
+        <FormControl>
           <FormLabel>Prompt</FormLabel>
           <Textarea
             name="prompt"
@@ -244,7 +247,7 @@ const DisplayAgentModal: React.FC<DisplayAgentDetailsProps> = ({ agent: initialA
             rows={6}
           />
         </FormControl>
-        <FormControl isReadOnly={!isEditing}>
+        <FormControl>
           <FormLabel>LLM Model</FormLabel>
           {isEditing ? (
             <Select
@@ -267,7 +270,7 @@ const DisplayAgentModal: React.FC<DisplayAgentDetailsProps> = ({ agent: initialA
             />
           )}
         </FormControl>
-        <FormControl isReadOnly={!isEditing}>
+        <FormControl>
           <FormLabel>Voice ID</FormLabel>
           {isEditing ? (
             <Select
@@ -295,9 +298,9 @@ const DisplayAgentModal: React.FC<DisplayAgentDetailsProps> = ({ agent: initialA
             <HStack spacing={4}>
               <Slider
                 flex="1"
-                value={agent.additional_setting?.voice_temperature ?? 1}
+                value={agent.additional_setting?.voice_temperature ?? 0.87}
                 min={0}
-                max={1}
+                max={2}
                 step={0.01}
                 onChange={(value) => handleSliderChange('voice_temperature', value)}
                 isDisabled={!isEditing}
@@ -308,7 +311,7 @@ const DisplayAgentModal: React.FC<DisplayAgentDetailsProps> = ({ agent: initialA
                 <SliderThumb />
               </Slider>
               <Box minWidth="60px" textAlign="right">
-                <Text fontWeight="bold">{(agent.additional_setting?.voice_temperature ?? 1).toFixed(2)}</Text>
+                <Text fontWeight="bold">{(agent.additional_setting?.voice_temperature ?? 0.87).toFixed(2)}</Text>
               </Box>
             </HStack>
           </FormControl>
@@ -318,9 +321,9 @@ const DisplayAgentModal: React.FC<DisplayAgentDetailsProps> = ({ agent: initialA
             <HStack spacing={4}>
               <Slider
                 flex="1"
-                value={agent.additional_setting?.voice_speed ?? 1}
+                value={agent.additional_setting?.voice_speed ?? 0.92}
                 min={0}
-                max={1}
+                max={2}
                 step={0.01}
                 onChange={(value) => handleSliderChange('voice_speed', value)}
                 isDisabled={!isEditing}
@@ -331,7 +334,7 @@ const DisplayAgentModal: React.FC<DisplayAgentDetailsProps> = ({ agent: initialA
                 <SliderThumb />
               </Slider>
               <Box minWidth="60px" textAlign="right">
-                <Text fontWeight="bold">{(agent.additional_setting?.voice_speed ?? 1).toFixed(2)}</Text>
+                <Text fontWeight="bold">{(agent.additional_setting?.voice_speed ?? 0.92).toFixed(2)}</Text>
               </Box>
             </HStack>
           </FormControl>
@@ -364,7 +367,7 @@ const DisplayAgentModal: React.FC<DisplayAgentDetailsProps> = ({ agent: initialA
             <HStack spacing={4}>
               <Slider
                 flex="1"
-                value={agent.additional_setting?.interruption_sensitivity ?? 1}
+                value={agent.additional_setting?.interruption_sensitivity ?? 0.18}
                 min={0}
                 max={1}
                 step={0.01}
@@ -377,7 +380,7 @@ const DisplayAgentModal: React.FC<DisplayAgentDetailsProps> = ({ agent: initialA
                 <SliderThumb />
               </Slider>
               <Box minWidth="60px" textAlign="right">
-                <Text fontWeight="bold">{(agent.additional_setting?.interruption_sensitivity ?? 1).toFixed(2)}</Text>
+                <Text fontWeight="bold">{(agent.additional_setting?.interruption_sensitivity ?? 0.18).toFixed(2)}</Text>
               </Box>
             </HStack>
           </FormControl>
@@ -385,7 +388,7 @@ const DisplayAgentModal: React.FC<DisplayAgentDetailsProps> = ({ agent: initialA
           <FormControl display="flex" alignItems="center">
             <FormLabel mb="0">Enable Backchannel</FormLabel>
             <Switch
-              isChecked={agent.additional_setting?.enable_backchannel ?? false}
+              isChecked={agent.additional_setting?.enable_backchannel ?? true}
               onChange={handleSwitchChange}
               name="enable_backchannel"
               isDisabled={!isEditing}
@@ -399,7 +402,7 @@ const DisplayAgentModal: React.FC<DisplayAgentDetailsProps> = ({ agent: initialA
                 <HStack spacing={4}>
                   <Slider
                     flex="1"
-                    value={agent.additional_setting?.backchannel_frequency ?? 0.9}
+                    value={agent.additional_setting?.backchannel_frequency ?? 0.66}
                     min={0}
                     max={1}
                     step={0.01}
@@ -412,7 +415,7 @@ const DisplayAgentModal: React.FC<DisplayAgentDetailsProps> = ({ agent: initialA
                     <SliderThumb />
                   </Slider>
                   <Box minWidth="60px" textAlign="right">
-                    <Text fontWeight="bold">{(agent.additional_setting?.backchannel_frequency ?? 0.9).toFixed(2)}</Text>
+                    <Text fontWeight="bold">{(agent.additional_setting?.backchannel_frequency ?? 0.66).toFixed(2)}</Text>
                   </Box>
                 </HStack>
               </FormControl>
@@ -421,7 +424,7 @@ const DisplayAgentModal: React.FC<DisplayAgentDetailsProps> = ({ agent: initialA
                 <Input
                   type="text"
                   name="backchannel_words"
-                  value={agent.additional_setting?.backchannel_words?.join(', ') ?? ''}
+                  value={Array.isArray(agent.additional_setting?.backchannel_words) ? agent.additional_setting.backchannel_words.join(', ') : 'uh-huh,okay,great,hmm'}
                   readOnly={!isEditing}
                   onChange={handleAdditionalSettingChange}
                 />
@@ -460,7 +463,7 @@ const DisplayAgentModal: React.FC<DisplayAgentDetailsProps> = ({ agent: initialA
             <HStack spacing={4}>
               <Slider
                 flex="1"
-                value={agent.additional_setting?.ambient_sound_volume ?? 1}
+                value={agent.additional_setting?.ambient_sound_volume ?? 0.12}
                 min={0}
                 max={2}
                 step={0.01}
@@ -473,28 +476,28 @@ const DisplayAgentModal: React.FC<DisplayAgentDetailsProps> = ({ agent: initialA
                 <SliderThumb />
               </Slider>
               <Box minWidth="60px" textAlign="right">
-                <Text fontWeight="bold">{(agent.additional_setting?.ambient_sound_volume ?? 1).toFixed(2)}</Text>
+                <Text fontWeight="bold">{(agent.additional_setting?.ambient_sound_volume ?? 0.12).toFixed(2)}</Text>
               </Box>
             </HStack>
           </FormControl>
 
-          <FormControl isReadOnly={!isEditing}>
+          <FormControl>
             <FormLabel>Boosted Keywords</FormLabel>
             <Input
               type="text"
               name="boosted_keywords"
-              value={agent.additional_setting?.boosted_keywords?.join(', ') ?? ''}
+              value={Array.isArray(agent.additional_setting?.boosted_keywords) ? agent.additional_setting.boosted_keywords.join(', ') : ''}
               readOnly={!isEditing}
               onChange={handleAdditionalSettingChange}
             />
           </FormControl>
 
-          <FormControl isReadOnly={!isEditing}>
+          <FormControl>
             <FormLabel>End Call After Silence (ms)</FormLabel>
             <Input
               type="number"
               name="end_call_after_silence_ms"
-              value={agent.additional_setting?.end_call_after_silence_ms ?? 600000}
+              value={agent.additional_setting?.end_call_after_silence_ms ?? 10000}
               readOnly={!isEditing}
               onChange={handleAdditionalSettingChange}
             />

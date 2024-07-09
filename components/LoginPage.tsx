@@ -1,28 +1,30 @@
-"use client"
+"use client";
 
-import { Box, Button, FormControl, FormLabel, Input, Spinner, useToast, VStack, Heading, Text, HStack, Icon } from "@chakra-ui/react"
-import { useState } from "react"
-import { FcGoogle } from "react-icons/fc"
-import { FaGithub } from "react-icons/fa"
-import { signIn, useSession } from "next-auth/react"
-import { useRouter } from "next/navigation"
+import { Box, Button, FormControl, FormLabel, Input, Spinner, useToast, VStack, Heading, Text } from "@chakra-ui/react";
+import { useState, useEffect } from "react";
+import { FcGoogle } from "react-icons/fc";
+import { FaGithub } from "react-icons/fa";
+import { signIn, useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import axios from 'axios';
 
 const LoginPage = () => {
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [loading, setLoading] = useState(false)
-  const toast = useToast()
-  const router = useRouter()
-  const { data: session } = useSession()
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const toast = useToast();
+  const router = useRouter();
+  const { data: session } = useSession();
 
   const handleLogin = async () => {
-    setLoading(true)
+    setLoading(true);
     try {
       const result = await signIn("credentials", {
         redirect: false,
         email,
         password,
-      })
+      });
+
       if (result?.error) {
         toast({
           title: "Login Failed",
@@ -30,62 +32,61 @@ const LoginPage = () => {
           status: "error",
           duration: 3000,
           isClosable: true,
-        })
-      } else {
+        });
+      } else if (result?.ok && !result.error) {
         toast({
           title: "Login Successful",
           status: "success",
           duration: 3000,
           isClosable: true,
-        })
-        router.push("/dashboard")
+        });
       }
     } catch (error) {
-      console.error("Login error:", error)
       toast({
         title: "Login Failed",
         description: "An unexpected error occurred",
         status: "error",
         duration: 3000,
         isClosable: true,
-      })
+      });
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleGoogleLogin = () => {
-    signIn("google", { callbackUrl: "/dashboard" })
-  }
+    signIn("google", { callbackUrl: "/" });
+  };
 
   const handleGithubLogin = () => {
-    signIn("github", { callbackUrl: "/dashboard" })
-  }
+    signIn("github", { callbackUrl: "/" });
+  };
 
-  if (session) {
-    router.push("/dashboard");
-    return null;
-  }
+  useEffect(() => {
+    if (session) {
+      if (session.user.companyExists) {
+        localStorage.setItem('authToken', session.user.authToken);
+        router.push("/dashboard");
+      } else {
+        router.push("/create-company");
+      }
+    }
+  }, [session, router]);
 
   return (
-    <>
-    {/* // <Box className="flex items-center  h-screen w-full">
-    //   <Box className="flex w-full">
-    //     Informational Panel */}
-    <Box className="flex items-center  h-screen w-full">
-        <Box className="h-screen w-1/2 bg-black flex flex-col justify-center p-12 text-white">
-          <Heading as="h3" size="lg" mb={3}>Welcome Back!</Heading>
-          <Text fontSize="md">
-            Please login to your account using your credentials or continue with one of the social login options.
-          </Text>
-        </Box>
+    <Box className="flex items-center h-screen w-full">
+      <Box className="h-screen w-1/2 bg-black flex flex-col justify-center p-12 text-white">
+        <Heading as="h3" size="lg" mb={3}>Welcome Back!</Heading>
+        <Text fontSize="md">
+          Please login to your account using your credentials or continue with one of the social login options.
+        </Text>
+      </Box>
 
-        {/* Login Form Panel */}
-        <Box className="w-1/2 bg-white flex flex-row item-center justify-center">
+      <Box className="w-1/2 bg-white flex flex-row item-center justify-center">
         <Box className="flex flex-col justify-center">
           <VStack spacing={3} align="stretch" width="full">
             <Heading as="h1" size="lg" textAlign="center">Login</Heading>
-            <FormControl id="email" >
+            <FormControl id="email">
               <FormLabel>Email</FormLabel>
               <Input
                 type="email"
@@ -138,13 +139,9 @@ const LoginPage = () => {
               Continue with GitHub
             </Button>
           </VStack>
-          </Box>
         </Box>
-        </Box>
-      {/* </Box>
-    </Box> */}
-
-    </>
+      </Box>
+    </Box>
   );
 };
 

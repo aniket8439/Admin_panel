@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from 'react';
 import { useSession } from "next-auth/react";
 import { useRouter } from 'next/navigation';
 import { 
@@ -21,6 +22,12 @@ export default function Dashboard() {
   const { data: session } = useSession();
   const router = useRouter();
   const toast = useToast();
+
+  useEffect(() => {
+    if (session?.user?.authToken) {
+      localStorage.setItem('authToken', session.user.authToken);
+    }
+  }, [session]);
 
   const handleNavigation = (path: string) => {
     toast({
@@ -63,13 +70,6 @@ export default function Dashboard() {
               onClick={() => handleNavigation('/call-analysis')}
               bgColor={cardBgColor}
             />
-            {/* <DashboardCard 
-              title="User Feedback"
-              description="Gather and review feedback from users"
-              icon={FiSmile}
-              onClick={() => handleNavigation('/user-feedback')}
-              bgColor={cardBgColor}
-            /> */}
           </SimpleGrid>
         </VStack>
       </Container>
@@ -109,9 +109,6 @@ function DashboardCard({ title, description, icon, onClick, bgColor }: Dashboard
           <Button colorScheme="blue" size="lg" flex={1}>
             Get Started
           </Button>
-          {/* <Button colorScheme="blue" size="lg" variant="outline" flex={1}>
-            Learn More
-          </Button> */}
         </HStack>
       </VStack>
     </Box>
