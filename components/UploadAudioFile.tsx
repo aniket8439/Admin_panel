@@ -59,8 +59,9 @@ const UploadAudioFile: React.FC<UploadAudioFileProps> = ({ agent_id, onSubmit, o
 
     const formData = new FormData();
     formData.append('agent_id', agent_id);
-    formData.append('callback_url', 'https://ai-analysis-woiveba7pq-el.a.run.app/analysis_routes/callback');
+    formData.append('callback_url',  `${process.env.NEXT_PUBLIC_BASE_URL}/analysis_routes/callback`);
     formData.append('audio_file', selectedFile);
+    formData.append('voice_analysis', doVoiceAnalysis.toString());
 
     try {
       const response = await axios.post(
