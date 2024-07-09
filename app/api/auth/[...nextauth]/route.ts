@@ -31,9 +31,9 @@ export const authOptions: NextAuthOptions = {
           });
           
           if (response.status === 200 && response.data.exists) {
-            return { id: '1', name: 'J Smith', email: credentials.email, companyExists: true, token: response.data.token };
+            return { id: credentials.email, email: credentials.email, companyExists: true, token: response.data.token };
           } else if (response.status === 403) {
-            return { id: '1', name: 'J Smith', email: credentials.email, companyExists: false };
+            return { id: credentials.email, email: credentials.email, companyExists: false };
           } else {
             return null;
           }
@@ -66,14 +66,8 @@ export const authOptions: NextAuthOptions = {
             user.companyExists = false;
           }
         } catch (error) {
-          if (axios.isAxiosError(error)) {
-            if (error.response?.status === 400) {
-              throw new Error('Email does not exist');
-            }
-            console.error('Error checking company:', error.response?.data);
-          } else {
-            console.error('Error checking company:', error);
-          }
+          console.error('Error checking company:', error);
+          return false;
         }
       }
       return true;
@@ -94,10 +88,15 @@ export const authOptions: NextAuthOptions = {
       }
       return session;
     },
+    async redirect({ url, baseUrl }) {
+      if (url.startsWith(baseUrl)) return url;
+      else if (url.startsWith('/')) return new URL(url, baseUrl).toString();
+      return baseUrl;
+    },
   },
   pages: {
     signIn: '/login',
-    error: '/login',  // Redirect to login page on error
+    error: '/login',
   },
 };
 

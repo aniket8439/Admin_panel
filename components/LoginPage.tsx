@@ -14,7 +14,20 @@ const LoginPage = () => {
   const [loading, setLoading] = useState(false);
   const toast = useToast();
   const router = useRouter();
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
+
+  useEffect(() => {
+    if (status === 'loading') return; // Don't do anything while loading
+
+    if (session) {
+      if (session.user.companyExists) {
+        localStorage.setItem('authToken', session.user.authToken);
+        router.push("/dashboard");
+      } else {
+        router.push("/create-company");
+      }
+    }
+  }, [session, status, router]);
 
   const handleLogin = async () => {
     setLoading(true);
@@ -30,13 +43,6 @@ const LoginPage = () => {
           title: "Login Failed",
           description: result.error,
           status: "error",
-          duration: 3000,
-          isClosable: true,
-        });
-      } else if (result?.ok && !result.error) {
-        toast({
-          title: "Login Successful",
-          status: "success",
           duration: 3000,
           isClosable: true,
         });
@@ -62,16 +68,13 @@ const LoginPage = () => {
     signIn("github", { callbackUrl: "/" });
   };
 
-  useEffect(() => {
-    if (session) {
-      if (session.user.companyExists) {
-        localStorage.setItem('authToken', session.user.authToken);
-        router.push("/dashboard");
-      } else {
-        router.push("/create-company");
-      }
-    }
-  }, [session, router]);
+  if (status === 'loading') {
+    return <Spinner />;
+  }
+
+  if (session) {
+    return null; // or a loading indicator if you prefer
+  }
 
   return (
     <Box className="flex items-center h-screen w-full">
