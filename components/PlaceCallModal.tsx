@@ -64,7 +64,7 @@ const PlaceCallModal: React.FC<PlaceCallModalProps> = ({ agentId, dynamicVariabl
         ]
       };
 
-      const response = await fetch('https://ai-analysis1-woiveba7pq-as.a.run.app/voice_ai/create_phone_call', {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/voice_ai/create_phone_call`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

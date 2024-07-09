@@ -26,7 +26,7 @@ export const authOptions: NextAuthOptions = {
         }
         
         try {
-          const response = await axios.post('https://ai-analysis1-woiveba7pq-as.a.run.app/ui_routes/check_company', {
+          const response = await axios.post(`${process.env.NEXT_PUBLIC_BASE_URL}/ui_routes/check_company`, {
             email: credentials.email,
           });
           
@@ -55,7 +55,7 @@ export const authOptions: NextAuthOptions = {
     async signIn({ user }) {
       if (user.email) {
         try {
-          const response = await axios.post('https://ai-analysis1-woiveba7pq-as.a.run.app/ui_routes/check_company', {
+          const response = await axios.post(`${process.env.NEXT_PUBLIC_BASE_URL}/ui_routes/check_company`, {
             email: user.email,
           });
           

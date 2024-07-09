@@ -59,7 +59,7 @@ const DisplayAgentModalCallAnalysis: React.FC<DisplayAgentDetailsProps> = ({ age
         throw new Error("Authentication token not found. Please log in again.");
       }
 
-      const response = await fetch(`https://ai-analysis1-woiveba7pq-as.a.run.app/analysis_routes/agent/${agent_id}`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/analysis_routes/agent/${agent_id}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
@@ -92,7 +92,7 @@ const DisplayAgentModalCallAnalysis: React.FC<DisplayAgentDetailsProps> = ({ age
         throw new Error("Authentication token not found. Please log in again.");
       }
 
-      const response = await fetch(`https://ai-analysis1-woiveba7pq-as.a.run.app/ui_routes/edit_agent/${agent_id}`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/ui_routes/edit_agent/${agent_id}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -167,7 +167,7 @@ const DisplayAgentModalCallAnalysis: React.FC<DisplayAgentDetailsProps> = ({ age
   const handleGetResponse = async () => {
     try {
       setIsLoading(true);
-      const response = await fetch(`https://ai-analysis1-woiveba7pq-as.a.run.app/analysis_routes/logs/${agent_id}`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/analysis_routes/logs/${agent_id}`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
         },

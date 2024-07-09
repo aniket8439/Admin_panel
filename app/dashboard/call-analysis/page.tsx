@@ -31,7 +31,7 @@ export default function CallAnalysis() {
         throw new Error("Authentication token not found. Please log in again.");
       }
 
-      const response = await fetch('https://ai-analysis1-woiveba7pq-as.a.run.app/analysis_routes/agents', {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/analysis_routes/agents`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',

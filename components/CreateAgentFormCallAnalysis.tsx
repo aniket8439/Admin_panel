@@ -80,7 +80,7 @@ export default function CreateAgentFormCallAnalysis({ onClose, onCreate, onAgent
         throw new Error("Authentication token not found. Please log in again.");
       }
 
-      const response = await fetch('https://ai-analysis1-woiveba7pq-as.a.run.app/ui_routes/add_agent', {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/ui_routes/add_agent`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

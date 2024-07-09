@@ -55,7 +55,7 @@ export default function VoiceAI() {
         throw new Error("Authentication token not found. Please log in again.");
       }
 
-      const response = await fetch('https://ai-analysis1-woiveba7pq-as.a.run.app/voice_ai/agents', {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/voice_ai/agents`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -98,7 +98,7 @@ export default function VoiceAI() {
         throw new Error("Authentication token not found. Please log in again.");
       }
 
-      const response = await fetch(`https://ai-analysis1-woiveba7pq-as.a.run.app/voice_ai/agent/${agentId}`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/voice_ai/agent/${agentId}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',

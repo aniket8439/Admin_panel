@@ -100,7 +100,7 @@ const DisplayAgentModal: React.FC<DisplayAgentDetailsProps> = ({ agent: initialA
     try {
       console.log('Saving agent:', payload); // Log the agent being saved
 
-      const response = await fetch(`https://ai-analysis1-woiveba7pq-as.a.run.app/voice_ai/update_agent/${agent.agent_id}`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/voice_ai/update_agent/${agent.agent_id}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',

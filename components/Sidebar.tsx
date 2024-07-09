@@ -25,6 +25,7 @@ export default function Sidebar({ isCollapsed, onToggleSidebar }: SidebarProps) 
   };
 
   const handleLogout = async () => {
+    localStorage.clear();
     await signOut({ redirect: false });
     router.push("/");
   };

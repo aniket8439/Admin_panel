@@ -48,7 +48,7 @@ const VoiceAI = () => {
           throw new Error("Authentication token not found. Please log in again.");
         }
 
-        const response = await fetch('https://ai-analysis1-woiveba7pq-as.a.run.app/voice_ai/voice_ai_logs', {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/voice_ai/voice_ai_logs`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',

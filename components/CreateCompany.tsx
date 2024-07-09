@@ -41,7 +41,7 @@ const CreateCompany: React.FC<CreateCompanyProps> = ({ userData, onCompanyCreate
     try {
       setLoading(true);
       const response = await axios.post(
-        "https://ai-analysis1-woiveba7pq-as.a.run.app/ui_routes/add_company",
+        `${process.env.NEXT_PUBLIC_BASE_URL}/ui_routes/add_company`,
         {
           company_name: formData.companyName,
           spoc_name: formData.spocName,

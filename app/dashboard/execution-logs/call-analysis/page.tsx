@@ -50,7 +50,7 @@ const CallAnalysis = () => {
   const handleGetAnalysisResponse = async () => {
     try {
       setLoading(true);
-      const response = await fetch('https://ai-analysis1-woiveba7pq-as.a.run.app/analysis_routes/execution_logs', {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/analysis_routes/execution_logs`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
         },
@@ -88,11 +88,40 @@ const CallAnalysis = () => {
     return (
       <HStack spacing={2}>
         {Object.entries(results).map(([key, value]) => (
-          <Badge key={key} colorScheme={value ? "green" : "red"}>
-            {key.replace(/_/g, ' ')}: {value ? "No" : "Yes"}
+          <Badge key={key} colorScheme={value ? "red" : "green"}>
+            {key.replace(/_/g, ' ')}: {value ? "Yes" : "No"}
           </Badge>
         ))}
       </HStack>
+    );
+  };
+
+  const AIResponse = ({ aiResponse }: { aiResponse: string }) => {
+    let parsedResponse: any;
+
+    try {
+      parsedResponse = JSON.parse(aiResponse);
+    } catch (error) {
+      return <Text>Error parsing AI response</Text>;
+    }
+
+    const renderSection = (title: string, content: any) => (
+      <Box>
+        <Heading as="h3" size="sm">{title}</Heading>
+        <Text whiteSpace="pre-wrap">{content}</Text>
+      </Box>
+    );
+
+    return (
+      <VStack align="stretch" spacing={4}>
+        {parsedResponse.script_follow && renderSection("Script Follow", parsedResponse.script_follow)}
+        {parsedResponse.sales_pitch && renderSection("Sales Pitch", parsedResponse.sales_pitch)}
+        {parsedResponse.redflags && renderSection("Red Flags", parsedResponse.redflags)}
+        {parsedResponse.info_extraction && renderSection("Info Extraction", parsedResponse.info_extraction)}
+        {parsedResponse.final_result && renderSection("Final Result", parsedResponse.final_result)}
+        {parsedResponse.actions && renderSection("Actions", parsedResponse.actions)}
+        {parsedResponse.suggestions && renderSection("Suggestions", parsedResponse.suggestions)}
+      </VStack>
     );
   };
 
@@ -118,7 +147,7 @@ const CallAnalysis = () => {
                 <VStack align="stretch" spacing={4}>
                   <Box>
                     <Heading as="h3" size="sm">AI Response</Heading>
-                    <Text>{JSON.parse(response.ai_response).script_follow}</Text>
+                    <AIResponse aiResponse={response.ai_response} />
                   </Box>
                   <Box>
                     <Heading as="h3" size="sm">Pitch Results</Heading>
